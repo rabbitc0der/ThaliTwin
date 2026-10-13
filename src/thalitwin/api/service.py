@@ -15,16 +15,21 @@ Provides asynchronous, high-throughput REST endpoints for:
 
 import os
 import sys
+# Silence Windows joblib wmic deprecation warning
+if "LOKY_MAX_CPU_COUNT" not in os.environ:
+    os.environ["LOKY_MAX_CPU_COUNT"] = str(os.cpu_count() or 4)
+
 import time
 import json
 from typing import Dict, List, Optional
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response, status, Query, Path
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 import pandas as pd
+
 
 # Path setup
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -140,6 +145,180 @@ async def audit_and_timing_middleware(request: Request, call_next):
 # ENDPOINTS
 # ==============================================================================
 
+@app.get("/", include_in_schema=False, response_class=HTMLResponse)
+async def api_landing_portal():
+    """Enterprise Dark-Mode Landing Portal for the ThaliTwin API."""
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ThaliTwin Clinical Decision Support API</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body {
+                font-family: 'Inter', -apple-system, sans-serif;
+                background: #0B1120;
+                color: #F8FAFC;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 30px 20px;
+            }
+            .container {
+                max-width: 860px;
+                width: 100%;
+                background: rgba(15, 23, 42, 0.85);
+                border: 1px solid rgba(51, 65, 85, 0.8);
+                border-radius: 16px;
+                padding: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(12px);
+            }
+            .badge-row {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 16px;
+            }
+            .badge {
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 4px 10px;
+                border-radius: 6px;
+                background: rgba(56, 189, 248, 0.15);
+                color: #38BDF8;
+                border: 1px solid rgba(56, 189, 248, 0.3);
+            }
+            .badge-green {
+                background: rgba(16, 185, 129, 0.15);
+                color: #10B981;
+                border: 1px solid rgba(16, 185, 129, 0.3);
+            }
+            h1 {
+                font-size: 28px;
+                font-weight: 700;
+                color: #F8FAFC;
+                margin-bottom: 8px;
+            }
+            p.subtitle {
+                font-size: 15px;
+                color: #94A3B8;
+                margin-bottom: 28px;
+                line-height: 1.5;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 16px;
+                margin-bottom: 28px;
+            }
+            .card {
+                background: rgba(30, 41, 59, 0.7);
+                border: 1px solid rgba(51, 65, 85, 0.8);
+                border-radius: 12px;
+                padding: 20px;
+                text-decoration: none;
+                color: inherit;
+                transition: all 0.2s ease;
+                display: flex;
+                flex-direction: column;
+            }
+            .card:hover {
+                border-color: #38BDF8;
+                transform: translateY(-2px);
+                background: rgba(30, 41, 59, 1);
+            }
+            .card-title {
+                font-size: 15px;
+                font-weight: 600;
+                color: #38BDF8;
+                margin-bottom: 6px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .card-desc {
+                font-size: 12px;
+                color: #94A3B8;
+                line-height: 1.4;
+            }
+            .footer {
+                text-align: center;
+                font-size: 12px;
+                color: #64748B;
+                border-top: 1px solid rgba(51, 65, 85, 0.6);
+                padding-top: 18px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="badge-row">
+                <span class="badge badge-green">● Service Online (200 OK)</span>
+                <span class="badge">SaMD Class IIa</span>
+                <span class="badge">ABDM HL7 FHIR R4</span>
+                <span class="badge">45 Cohort Patients</span>
+            </div>
+            <h1>🩺 ThaliTwin Clinical Decision Support API</h1>
+            <p class="subtitle">
+                Stepped-Care Frugal Digital Twin Engine for Type 2 Diabetes in India.<br>
+                Engineered for the <b>Happiest Health Digital Twin Challenge 2026</b> (Bengaluru Summit Track).
+            </p>
+            
+            <div class="grid">
+                <a href="/docs" class="card" style="border-color: #38BDF8; background: rgba(56, 189, 248, 0.08);">
+                    <div class="card-title">🚀 Interactive Swagger UI</div>
+                    <div class="card-desc">Explore and test all real-time inference, what-if, and active inquiry endpoints interactively.</div>
+                </a>
+                <a href="/redoc" class="card">
+                    <div class="card-title">📖 ReDoc Architecture</div>
+                    <div class="card-desc">Detailed clinical OpenAPI schemas, response models, and parameter documentation.</div>
+                </a>
+                <a href="/health" class="card">
+                    <div class="card-title">💓 System Health Probe</div>
+                    <div class="card-desc">Probe checking active patients, SaMD classification, and engine readiness.</div>
+                </a>
+                <a href="/api/v1/patients" class="card">
+                    <div class="card-title">👥 Ward Triage List</div>
+                    <div class="card-desc">JSON array of all 45 real study participants with baseline labs and active tiers.</div>
+                </a>
+                <a href="/api/v1/benchmarks" class="card">
+                    <div class="card-title">📊 Scientific Benchmarks</div>
+                    <div class="card-desc">Noise floor (38.7 mg/dL), PyTorch BiGRU comparison, and BIG IDEAs validation.</div>
+                </a>
+                <a href="/api/v1/reports/1/pdf" class="card" target="_blank">
+                    <div class="card-title">📄 Sample Patient 1 PDF Report</div>
+                    <div class="card-desc">Download hospital-grade 2-page AGP & Stepped-Care transition clearance certificate.</div>
+                </a>
+                <a href="/api/v1/audit/logs" class="card">
+                    <div class="card-title">🛡️ Cryptographic Audit Ledger</div>
+                    <div class="card-desc">21 CFR Part 11 and DPDP Act append-only SHA-256 tamper-evident log query.</div>
+                </a>
+                <a href="/api/v1/abdm/fhir/1" class="card">
+                    <div class="card-title">🏥 ABDM FHIR R4 Bundle</div>
+                    <div class="card-desc">National NRCES NDHM clinical record collection bundle with LOINC 15074-8.</div>
+                </a>
+            </div>
+            
+            <div class="footer">
+                ThaliTwin · Reimagining & Reforming Healthcare in India Summit 2026 · Bengaluru, India
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(content=b"", media_type="image/x-icon")
+
 @app.get("/health", tags=["System"])
 async def health_check():
     """System health check and readiness probe."""
@@ -148,6 +327,7 @@ async def health_check():
         "service": "ThaliTwin Clinical API",
         "version": "1.0.0",
         "samd_compliance": "IMDRF SaMD Tier IIa",
+
         "dpdp_compliance": "DPDP Act 2023 Compliant",
         "active_participants": len(state.bio_df) if state.bio_df is not None else 0
     }
