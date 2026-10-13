@@ -1,0 +1,13 @@
+.git
+.gitignore
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+web/node_modules/
+web/.next/
+docs/reports/*.pdf

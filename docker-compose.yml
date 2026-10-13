@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Service 1: Production Clinical Decision Support REST API (FastAPI)
+  thalitwin-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thalitwin-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - LOKY_MAX_CPU_COUNT=4
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+    command: ["python", "scripts/run_api.py", "--host", "0.0.0.0", "--port", "8000"]
+
+  # Service 2: Doctor-Facing Interactive Console (Streamlit)
+  thalitwin-console:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thalitwin-console
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_SERVER_HEADLESS=true
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+    command: ["streamlit", "run", "console/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    depends_on:
+      - thalitwin-api
