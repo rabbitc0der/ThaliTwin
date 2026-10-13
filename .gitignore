@@ -38,6 +38,9 @@ web/dist/
 web/node_modules/
 .vite/
 
+# Distribution & Submission Packages
+submission_bundle/
+
 # OS
 .DS_Store
 Thumbs.db

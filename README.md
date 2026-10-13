@@ -194,8 +194,9 @@ ThaliTwin/
 ├── scripts/
 │   ├── run_api.py                 # FastAPI runner (ports 8000 / 8080)
 │   ├── evaluate_submission.py     # Master submission scorecard evaluator
+│   ├── package_submission.py      # Standalone submission packaging & SHA-256 manifest
 │   └── run_deep_baseline.py       # BiGRU vs LightGBM multi-horizon benchmark
-└── tests/                         # 23 Unit tests across API, FHIR, Leakage, Monotonicity, Gut ODE
+└── tests/                         # 28 Unit tests across Security, API, FHIR, Leakage, Monotonicity, Gut ODE
 ```
 
 ---

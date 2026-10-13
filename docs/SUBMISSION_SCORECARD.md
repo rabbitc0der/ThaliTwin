@@ -1,7 +1,7 @@
 # ThaliTwin: Official Executive Clinical Scorecard
 ## Happiest Health Digital Twin Challenge 2026 (Bengaluru Summit Track)
 
-**Audit Timestamp:** 2026-10-14 01:01:04 IST  
+**Audit Timestamp:** 2026-10-14 01:40:53 IST  
 **System Classification:** SaMD Class IIa (Clinical Decision Support)  
 **Regulatory Target:** CDSCO / ICMR Ethical AI Guidelines / DPDP Act 2023  
 **Interoperability Standard:** ABDM HL7 FHIR R4 (NRCES NDHM NDHM-LOINC 15074-8)  
