@@ -1,0 +1,4 @@
+Tier,Sensors,Monthly Cost (INR),AUROC,AUPRC,Sensitivity,Peak Rise RMSE (mg/dL),Conformal 90% Band
+Tier 1 (Rich CGM),Dexcom G6 Pro (5m) + Fitbit + Meals,"₹10,000",0.755,0.804,0.824,34.03,±55.48 mg/dL
+Tier 2 (Frugal SMBG),Glucometer (3-4/day) + Fitbit + Meals,"₹1,200",0.743,0.8,0.826,34.67,±56.48 mg/dL
+Tier 3 (Triage),Fitbit + Static EHR Labs Only,₹0,0.688,0.752,0.825,34.74,±55.98 mg/dL

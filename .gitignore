@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Raw dataset (downloaded on demand via scripts/fetch_cgmacros.py)
+data/raw/
+*.zip
+*.csv.gz
+
+# Pytest / Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
