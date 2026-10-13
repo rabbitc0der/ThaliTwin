@@ -119,7 +119,8 @@ export default function TriageWorklist({ patients, onSelectPatient, activeTier }
 
       {/* Patient Table */}
       <div className="glass-panel" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="custom-table">
+        <div className="table-container">
+          <table className="custom-table">
           <thead>
             <tr>
               <th>Patient</th>
@@ -187,6 +188,7 @@ export default function TriageWorklist({ patients, onSelectPatient, activeTier }
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

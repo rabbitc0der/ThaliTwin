@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sliders, ShieldCheck, AlertCircle, Droplets, Utensils, Activity, ArrowRight } from 'lucide-react';
+import { Sliders, ShieldCheck, AlertCircle, Droplets, Utensils, Activity, ArrowRight, FileText } from 'lucide-react';
 
 export default function TwinTrajectoryView({ patient, trajectoryPoints, onOpenWhatIf }) {
   const [selectedTier, setSelectedTier] = useState('T2_Frugal');
@@ -78,9 +78,18 @@ export default function TwinTrajectoryView({ patient, trajectoryPoints, onOpenWh
             </p>
           </div>
 
-          <button className="btn-accent" onClick={onOpenWhatIf}>
-            <Utensils size={16} /> Test Indian Thali What-If <ArrowRight size={14} />
-          </button>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button
+              className="btn-primary"
+              style={{ background: 'linear-gradient(135deg, #6366F1, #4F46E5)' }}
+              onClick={() => window.open(`http://127.0.0.1:8000/api/v1/reports/${patient.id}/pdf`, '_blank')}
+            >
+              <FileText size={16} /> Download Hospital AGP (PDF)
+            </button>
+            <button className="btn-accent" onClick={onOpenWhatIf}>
+              <Utensils size={16} /> Test Indian Thali What-If <ArrowRight size={14} />
+            </button>
+          </div>
         </div>
       </div>
 

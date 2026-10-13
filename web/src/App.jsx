@@ -5,8 +5,9 @@ import TwinTrajectoryView from './components/TwinTrajectoryView';
 import ThaliWhatIfSimulator from './components/ThaliWhatIfSimulator';
 import SteppedCareEconomics from './components/SteppedCareEconomics';
 import TrustAndEvidence from './components/TrustAndEvidence';
+import RegulatorySaMDView from './components/RegulatorySaMDView';
 
-import { Users, Activity, Utensils, IndianRupee, ShieldCheck } from 'lucide-react';
+import { Users, Activity, Utensils, IndianRupee, ShieldCheck, ShieldAlert } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('triage');
@@ -84,6 +85,13 @@ export default function App() {
           >
             <ShieldCheck size={16} /> 5. Scientific Evidence & Trust Pack
           </button>
+
+          <button
+            className={`nav-tab-btn ${activeTab === 'samd' ? 'active' : ''}`}
+            onClick={() => setActiveTab('samd')}
+          >
+            <ShieldAlert size={16} /> 6. Regulatory SaMD & Audit
+          </button>
         </nav>
 
         {/* Tab Views */}
@@ -122,8 +130,13 @@ export default function App() {
               evidenceData={evidence}
             />
           )}
+
+          {activeTab === 'samd' && (
+            <RegulatorySaMDView />
+          )}
         </main>
       </div>
     </>
   );
 }
+
