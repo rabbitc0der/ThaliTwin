@@ -18,6 +18,13 @@ data/raw/
 .coverage
 htmlcov/
 
+# Node / Web App
+node_modules/
+dist/
+web/dist/
+web/node_modules/
+.vite/
+
 # OS
 .DS_Store
 Thumbs.db
