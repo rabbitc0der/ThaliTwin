@@ -8,8 +8,12 @@ Usage:
 
 import os
 import sys
+if "LOKY_MAX_CPU_COUNT" not in os.environ:
+    os.environ["LOKY_MAX_CPU_COUNT"] = str(os.cpu_count() or 4)
+
 import argparse
 import uvicorn
+
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 

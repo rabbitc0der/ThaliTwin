@@ -5,10 +5,13 @@ Allows running the FastAPI service even when the shell's working directory is we
 
 import os
 import sys
+if "LOKY_MAX_CPU_COUNT" not in os.environ:
+    os.environ["LOKY_MAX_CPU_COUNT"] = str(os.cpu_count() or 4)
 
 # Forward to root scripts/run_api.py
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, os.path.join(ROOT_DIR, "src"))
+
 
 if __name__ == "__main__":
     import uvicorn
