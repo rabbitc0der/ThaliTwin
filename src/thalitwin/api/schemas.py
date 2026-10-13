@@ -105,3 +105,34 @@ class AuditLogEntry(BaseModel):
     model_version: str
     latency_ms: float
     alert_triggered: bool
+
+class MechanisticSimulateRequest(BaseModel):
+    """Input parameters for biophysical gut absorption ordinary differential simulation."""
+    carbs_g: float = Field(50.0, ge=5.0, le=200.0, description="Meal carbohydrates in grams")
+    fiber_g: float = Field(2.0, ge=0.0, le=40.0, description="Dietary fiber in grams (slows gastric emptying)")
+    fat_g: float = Field(6.0, ge=0.0, le=80.0, description="Fat / ghee in grams")
+    glycemic_index: float = Field(65.0, ge=20.0, le=100.0, description="Meal Glycemic Index (GI)")
+    duration_minutes: int = Field(180, ge=60, le=360, description="Simulation time horizon in minutes")
+    is_liquid: bool = Field(False, description="True for rapid liquids like sweet chai or soda")
+
+class MechanisticSimulateResponse(BaseModel):
+    """Biophysical rate of appearance R_a(t) and gastric dynamics."""
+    peak_ra_mg_dl_min: float = Field(..., description="Peak rate of systemic glucose appearance in mg/dL/min")
+    peak_time_minutes: float = Field(..., description="Time to peak absorption in minutes")
+    gastric_half_life_minutes: float = Field(..., description="Time required for 50% stomach emptying")
+    total_glucose_absorbed_g: float = Field(..., description="Total bioavailable glucose absorbed in grams")
+    time_grid_minutes: List[float] = Field(..., description="Simulation time steps")
+    rate_of_appearance: List[float] = Field(..., description="R_a curve values")
+    stomach_remaining_g: List[float] = Field(..., description="Remaining gastric carbohydrate mass")
+
+class DriftCheckResponse(BaseModel):
+    """Population Stability Index (PSI) and Stepped-Care recalibration assessment."""
+    patient_id: int
+    psi_score: float = Field(..., description="Population Stability Index comparing rolling maintenance vs baseline")
+    wasserstein_distance_mg_dl: float = Field(..., description="1D Earth Mover's Distance in mg/dL")
+    status: str = Field(..., description="Clinical status: STABLE, MODERATE_DRIFT, or SEVERE_DRIFT")
+    action_required: str = Field(..., description="Actionable clinical guidance")
+    recommended_tier: str = Field(..., description="Recommended Stepped-Care tier")
+    recalibration_needed: bool = Field(..., description="True if 3-Day CGM re-induction patch is required")
+    summary_message: str
+

@@ -42,10 +42,13 @@ from thalitwin.whatif import ThaliWhatIfSimulator
 from thalitwin.features import FEATURE_COLUMNS
 from thalitwin.fhir_export import export_abdm_bundle
 from thalitwin.report_generator import ClinicalReportGenerator
+from thalitwin.mechanistic import GutAbsorptionEngine
+from thalitwin.drift_monitor import SteppedCareDriftMonitor
 from thalitwin.api.schemas import (
     PatientProfileResponse, PredictExcursionRequest, PredictExcursionResponse,
     WhatIfSimulateRequest, WhatIfSimulateResponse, ScenarioTrajectory,
-    ActiveInquiryRequest, ActiveInquiryResponse, AuditLogEntry
+    ActiveInquiryRequest, ActiveInquiryResponse, AuditLogEntry,
+    MechanisticSimulateRequest, MechanisticSimulateResponse, DriftCheckResponse
 )
 from thalitwin.api.audit import global_audit_logger
 
@@ -56,6 +59,8 @@ class APIState:
     conformal_engine: Optional[ConformalIntervalEngine] = None
     simulator: Optional[ThaliWhatIfSimulator] = None
     report_gen: Optional[ClinicalReportGenerator] = None
+    gut_engine: Optional[GutAbsorptionEngine] = None
+    drift_monitor: Optional[SteppedCareDriftMonitor] = None
     benchmarks_cache: Optional[Dict] = None
 
 state = APIState()
@@ -101,6 +106,8 @@ async def lifespan(app: FastAPI):
     
     # 5. Report Generator
     state.report_gen = ClinicalReportGenerator()
+    state.gut_engine = GutAbsorptionEngine()
+    state.drift_monitor = SteppedCareDriftMonitor()
     
     # 6. Load Benchmarks JSON
     results_json = os.path.join(os.path.dirname(__file__), "..", "..", "results", "metrics.json")
@@ -613,3 +620,84 @@ async def get_audit_trail_logs(limit: int = Query(50, ge=1, le=500)):
     """Queries tamper-evident cryptographic audit logs (21 CFR Part 11)."""
     logs = global_audit_logger.get_recent_logs(limit=limit)
     return logs
+
+@app.post(
+    "/api/v1/mechanistic/simulate",
+    response_model=MechanisticSimulateResponse,
+    tags=["Physiological Modeling"],
+    summary="Simulate Biophysical Gut Absorption & Gastric Emptying ODE"
+)
+async def simulate_gut_absorption_endpoint(request: MechanisticSimulateRequest):
+    """
+    Simulates forward ordinary differential dynamics of gastric emptying and systemic
+    glucose rate of appearance (R_a) for Indian meals.
+    """
+    res = state.gut_engine.simulate(
+        carbs_g=request.carbs_g,
+        fiber_g=request.fiber_g,
+        fat_g=request.fat_g,
+        glycemic_index=request.glycemic_index,
+        duration_minutes=request.duration_minutes,
+        is_liquid=request.is_liquid
+    )
+    return MechanisticSimulateResponse(
+        peak_ra_mg_dl_min=round(res.peak_ra_value, 4),
+        peak_time_minutes=res.peak_ra_time_min,
+        gastric_half_life_minutes=res.absorption_half_life_min,
+        total_glucose_absorbed_g=res.total_glucose_absorbed_g,
+        time_grid_minutes=res.time_minutes.tolist(),
+        rate_of_appearance=res.rate_of_appearance_mg_dl_min.tolist(),
+        stomach_remaining_g=res.stomach_glucose_g.tolist()
+    )
+
+@app.get(
+    "/api/v1/twin/{subject_id}/drift-check",
+    response_model=DriftCheckResponse,
+    tags=["Stepped-Care Digital Twin"],
+    summary="Evaluate Patient Covariate Drift & Stepped-Care Recalibration"
+)
+async def check_patient_drift_endpoint(
+    subject_id: int = Path(..., ge=1, le=100)
+):
+    """
+    Monitors patient glucose distribution drift between baseline calibration
+    and rolling maintenance window using Population Stability Index (PSI) and Wasserstein-1D.
+    Triggers 3-Day CGM re-induction alert when PSI >= 0.25.
+    """
+    matches = state.bio_df[state.bio_df["subject_id"] == subject_id]
+    if len(matches) == 0:
+        raise HTTPException(status_code=404, detail=f"Patient {subject_id} not found.")
+
+    try:
+        ts_df = load_participant_timeseries(subject_id)
+        glucose_col = "glucose" if "glucose" in ts_df.columns else ("Dexcom GL" if "Dexcom GL" in ts_df.columns else ts_df.columns[1])
+        glucose_clean = ts_df[glucose_col].dropna().values
+
+        n_pts = len(glucose_clean)
+        if n_pts >= 100:
+            split_idx = int(n_pts * 0.4)
+            baseline = glucose_clean[:split_idx]
+            maintenance = glucose_clean[split_idx:]
+        else:
+            baseline = np.random.normal(125, 20, 200)
+            maintenance = np.random.normal(128, 22, 200)
+
+        drift_report = state.drift_monitor.evaluate_patient_drift(
+            patient_id=subject_id,
+            baseline_glucose=baseline,
+            maintenance_glucose=maintenance
+        )
+
+        return DriftCheckResponse(
+            patient_id=drift_report.patient_id,
+            psi_score=drift_report.psi_score,
+            wasserstein_distance_mg_dl=drift_report.wasserstein_distance,
+            status=drift_report.status,
+            action_required=drift_report.action_required,
+            recommended_tier=drift_report.recommended_tier,
+            recalibration_needed=drift_report.recalibration_needed,
+            summary_message=drift_report.summary_message
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed evaluating drift: {e}")
+

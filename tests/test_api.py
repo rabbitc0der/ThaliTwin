@@ -115,3 +115,33 @@ def test_audit_logs_api(client):
     assert isinstance(logs, list)
     assert len(logs) > 0
     assert "request_hash_sha256" in logs[0]
+
+def test_mechanistic_simulate_api(client):
+    """Tests biophysical gut absorption simulation endpoint."""
+    payload = {
+        "carbs_g": 60.0,
+        "fiber_g": 6.0,
+        "fat_g": 8.0,
+        "glycemic_index": 50.0,
+        "duration_minutes": 180,
+        "is_liquid": False
+    }
+    res = client.post("/api/v1/mechanistic/simulate", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert "peak_ra_mg_dl_min" in data
+    assert data["peak_ra_mg_dl_min"] > 0
+    assert data["gastric_half_life_minutes"] > 0
+    assert len(data["rate_of_appearance"]) > 0
+
+def test_patient_drift_check_api(client):
+    """Tests patient covariate drift & recalibration check endpoint."""
+    res = client.get("/api/v1/twin/1/drift-check")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["patient_id"] == 1
+    assert "psi_score" in data
+    assert "status" in data
+    assert data["status"] in ["STABLE", "MODERATE_DRIFT", "SEVERE_DRIFT"]
+    assert "recalibration_needed" in data
+
