@@ -21,6 +21,8 @@ if "LOKY_MAX_CPU_COUNT" not in os.environ:
 
 import time
 import json
+import threading
+from collections import defaultdict
 from typing import Dict, List, Optional
 from contextlib import asynccontextmanager
 
@@ -129,23 +131,73 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Middleware (allows web and mobile frontends)
+# Configurable CORS Middleware (Restricts origins in production)
+raw_origins = os.getenv("ALLOWED_ORIGINS", "*")
+allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+if "*" in allowed_origins or not allowed_origins:
+    allowed_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
-# Timing & Audit Middleware
+# Sliding Window Rate Limiter for DoS & Bot Scraping Protection
+class SlidingWindowRateLimiter:
+    def __init__(self, max_requests: int = 120, window_seconds: int = 60):
+        self.max_requests = max_requests
+        self.window = window_seconds
+        self.requests = defaultdict(list)
+        self.lock = threading.Lock()
+
+    def is_allowed(self, client_ip: str) -> bool:
+        now = time.time()
+        with self.lock:
+            history = self.requests[client_ip]
+            valid_history = [t for t in history if now - t < self.window]
+            if len(valid_history) >= self.max_requests:
+                self.requests[client_ip] = valid_history
+                return False
+            valid_history.append(now)
+            self.requests[client_ip] = valid_history
+            return True
+
+rate_limiter = SlidingWindowRateLimiter(
+    max_requests=int(os.getenv("RATE_LIMIT_PER_MINUTE", "120")),
+    window_seconds=60
+)
+
+# Timing, Audit & OWASP Security Headers Middleware
 @app.middleware("http")
-async def audit_and_timing_middleware(request: Request, call_next):
+async def security_and_audit_middleware(request: Request, call_next):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    path = request.url.path
+    is_exempt = path in ["/health", "/", "/docs", "/redoc", "/openapi.json"] or path.startswith("/favicon")
+
+    if not is_exempt and not rate_limiter.is_allowed(client_ip):
+        return JSONResponse(
+            status_code=429,
+            content={"detail": "Rate limit exceeded. Maximum 120 requests per minute permitted per client IP."},
+            headers={"Retry-After": "60"}
+        )
+
     start_time = time.perf_counter()
     response = await call_next(request)
     latency_ms = (time.perf_counter() - start_time) * 1000.0
+
+    # Inject Production Security & Governance Headers
     response.headers["X-Response-Time-Ms"] = f"{latency_ms:.2f}"
     response.headers["X-ThaliTwin-SaMD-Class"] = "Class-IIa-CDSS"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+
     return response
 
 # ==============================================================================
