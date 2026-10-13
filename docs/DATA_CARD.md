@@ -39,3 +39,16 @@ To prevent reporting unrealistic or mathematically hallucinated ML accuracy, we 
 - **Coverage:** 25 iconic dishes spanning North, South, East, West, and Central India.
 - **Variables Mapped:** Net Carbohydrates (g), Protein (g), Fat (g), Dietary Fiber (g), Calories (kcal), Glycemic Index (GI), and Glycemic Load (GL).
 - **Clinical Utility:** Translates culturally authentic Indian thali meals into standardized macronutrient vectors compatible with physiological absorption curves.
+
+---
+
+## 5. External Out-of-Distribution Cohort: PhysioNet BIG IDEAs
+- **Source:** *BIG IDEAs Lab Glycemic Variability and Wearable Device Data* (PhysioNet Version 1.0.0).
+- **Authors:** Bent et al. (Duke University, 2021/2024).
+- **License:** Open Access / ODC Public Domain Dedication and License (PDDL) v1.0.
+- **Cohort Size:** $n = 16$ adults.
+- **Hardware:** Dexcom G6 Mobile App Wearables (real-world ambulatory capture).
+- **Total Continuous CGM Readings:** 36,969 readings resampled to 5-minute canonical grid.
+- **Cohort Glycemic Profile:** Mean glucose $114.5$ mg/dL, Time in Range (70–180 mg/dL) $97.7\%$, Estimated GMI $6.05\%$.
+- **Clinical Purpose:** Evaluates zero-shot generalization of ThaliTwin across different institutional hardware and outpatient demographics without any fine-tuning.
+

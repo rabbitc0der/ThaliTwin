@@ -1,0 +1,6 @@
+unlogged_dropout_rate_pct,tier1_cgm_auroc,tier2_frugal_auroc,tier1_rmse_mg_dl,tier2_rmse_mg_dl,active_inquiry_detection_pct
+0,0.691,0.693,46.6,46.6,100.0
+10,0.691,0.672,46.6,46.7,74.4
+20,0.691,0.647,46.6,52.1,67.3
+30,0.691,0.641,46.6,52.5,68.6
+40,0.691,0.612,46.6,56.7,67.0

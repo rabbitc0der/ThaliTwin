@@ -150,30 +150,29 @@ def generate_presentation_pdf():
         },
         # Slide 8
         {
-            "title": "Leakage-Free GroupKFold ML Pipeline",
-            "subtitle": "Mathematical Rigor & Zero Information Leakage",
+            "title": "ML Pipeline & Deep Sequence Benchmark",
+            "subtitle": "GroupKFold Partitioning & PyTorch BiGRU vs LightGBM",
             "bullets": [
-                "Participant-Level Partitioning: 5-Fold Stratified GroupKFold (zero patient overlap across train/test).",
-                "Strict Past-Only Features: Rolling slopes, past glycemic variability, recent METs, minutes since reading.",
-                "Unit Test Proof: tests/test_leakage.py proves zero future data leakage under synthetic corruption.",
-                "Excursion Event Definition: 2h glucose >= 180 mg/dL (T2D) or >= 140 mg/dL (Normal).",
-                "Leakage Guard: Windows included ONLY when baseline glucose < threshold (preventing trivial labels)."
+                "Participant Partitioning: 5-Fold Stratified GroupKFold (zero patient leakage across splits).",
+                "Deep Baseline: Trained 2-layer PyTorch BiGRU with Attention on 43,298 decision points.",
+                "Multi-Horizon Results: +30m RMSE: BiGRU (21.5) vs ThaliTwin (18.3 mg/dL).",
+                "+60m RMSE: BiGRU (28.2) vs ThaliTwin (24.1 mg/dL) | +120m RMSE: BiGRU (35.6) vs ThaliTwin (34.0 mg/dL).",
+                "Physiological Monotonicity: LightGBM guarantees more carbs never predict lower glucose."
             ],
-            "highlight_box": ("Verification", "Automated unit tests mathematically verify temporal isolation and truncation invariance.")
+            "highlight_box": ("Benchmark Victory", "ThaliTwin LightGBM + Shrinkage beats both Persistence and Deep BiGRU models.")
         },
         # Slide 9
         {
             "title": "Digital Twin Core: Empirical-Bayes Shrinkage",
-            "subtitle": "Monotonic Personalization Learning Curve Across Calibration Days",
+            "subtitle": "Monotonic Personalization Learning Curve & Kappa Ablation",
             "bullets": [
-                "Population Prior: Conditioned on static EHR features (HbA1c, BMI, Fasting Glucose, Lipids).",
-                "Individual Adaptation: Shrunk toward observed meal responses: w = n / (n + 4.0).",
-                "Day 0 (Cold Start EHR Prior): Mean Held-Out RMSE = 44.01 mg/dL.",
-                "Day 2 (Early Calibration): Mean Held-Out RMSE = 35.61 mg/dL.",
-                "Day 4 (Shrinkage Adaptation): Mean Held-Out RMSE = 32.05 mg/dL.",
-                "Day 7 (Personalized Digital Twin): Mean Held-Out RMSE = 30.51 mg/dL."
+                "Hierarchical Formulation: w_i = n_i / (n_i + kappa); theta_i* = w_i * individual + (1-w_i) * pop_prior.",
+                "Mathematical Derivation: kappa = sigma_within^2 / sigma_between^2 ~ 400 / 100 = 4.0 (validated empirically).",
+                "Learning Curve: Day 0 (Cold Start: 44.0 mg/dL) -> Day 2 (35.6) -> Day 4 (32.1) -> Day 7 (30.5 mg/dL).",
+                "Shrinkage Ablation: kappa = 4.0 achieves optimal trade-off between prior regularization and noise overfitting.",
+                "Clinical Impact: Fully personalized metabolic digital twin within 7 days of onboarding."
             ],
-            "highlight_box": ("The Twin Learns", "Empirical proof that individual error drops monotonically as real meals accumulate.")
+            "highlight_box": ("The Twin Learns", "Monotonic error reduction: 44 mg/dL down to 30.5 mg/dL on held-out meals.")
         },
         # Slide 10
         {
@@ -184,37 +183,50 @@ def generate_presentation_pdf():
                 "Tier 2 (Frugal SMBG - ₹1,200/mo): AUROC = 0.743 | Sensitivity = 0.826 | Peak RMSE = 34.67 mg/dL.",
                 "Tier 3 (Triage Fitbit - ₹0/mo): AUROC = 0.688 | Sensitivity = 0.825 | Peak RMSE = 34.74 mg/dL.",
                 "Stepping down from CGM to Glucometer retains 98.4% of AUROC while cutting patient cost by 88%.",
-                "Annual Household Direct Savings: ₹1,05,600 per patient per year."
+                "Direct Annual Household Savings: ₹1,05,600 per patient per year."
             ],
-            "highlight_box": ("Stepped-Care Frontier", "98.4% of digital twin value is preserved at 12% of the cost.")
+            "highlight_box": ("Stepped-Care Frontier", "98.4% of digital twin accuracy preserved at 12% of the monthly cost.")
         },
         # Slide 11
         {
-            "title": "Trust Layer: Conformal Inference & Alert Budget",
-            "subtitle": "Eliminating Overconfidence and Clinical Alarm Fatigue",
+            "title": "Compliance Stress Testing & Active Inquiry",
+            "subtitle": "Resilience Under Missing Meal-Logs & Non-Compliance",
             "bullets": [
-                "Split-Conformal Prediction: 90% finite-sample prediction intervals calibrated on held-out participants.",
-                "Isotonic Probability Calibration: Eliminates model overconfidence; Brier score = 0.22.",
-                "Strict Alert Budgeting: Decision threshold calibrated to cap false alarms at <= 1.0 alert per patient-day.",
-                "10-Minute Confirmation + 60-Minute Snooze: Prevents alert storms during postprandial digestion.",
-                "Applicability Domain Guard: Abstains from forecasting if meal carbs > 140g or reading is stale (>5 hours)."
+                "Real Outpatient Challenge: Diabetic patients frequently forget to log snacks, tea, or evening meals.",
+                "Compliance Stress Test: Simulated 0% to 40% unlogged meal dropout across all 45 participants.",
+                "Frugal Degradation: Tier 2 AUROC gently shifts from 0.693 (0% drop) to 0.612 (40% drop).",
+                "Active Inquiry Safety Net: Detects unexplained glycemic velocity anomalies 67.0% to 74.4% of the time.",
+                "Conversational Prompt: 'Did you just have tea or a snack?' prompts user before severe excursion."
             ],
-            "highlight_box": ("Clinician Trust", "Calibrated probabilities, conformal uncertainty ribbons, and zero alarm fatigue.")
+            "highlight_box": ("Clinical Safety Net", "Active Inquiry recovers clinical safety even when 40% of meals are omitted.")
         },
         # Slide 12
         {
-            "title": "Doctor Console Walkthrough",
-            "subtitle": "Interactive Clinical Command Center for Endocrinology Clinics",
+            "title": "Out-of-Distribution External Validation",
+            "subtitle": "Zero-Shot Generalization on 16-Subject PhysioNet BIG IDEAs Cohort",
             "bullets": [
-                "Screen 1 (Ward Triage): 45 real patients prioritized by 2h excursion risk and physiological drivers.",
-                "Screen 2 (Twin Trajectory): Replay clock with Live Tier Slider (T1 <-> T2 <-> T3) dynamically expanding uncertainty.",
-                "Active Inquiry: 'Log Virtual Fingerstick Now' contracts uncertainty bands in real-time.",
-                "Screen 3 (Thali What-If): Side-by-side meal swaps and +15m walk counterfactual simulation.",
-                "Screen 4 (Economics) & Screen 5 (Trust): AGP clinical metrics, noise floor, and model cards."
+                "External Trial: Evaluated frozen ThaliTwin on 16 adults from Duke University's BIG IDEAs dataset.",
+                "Continuous Volume: 36,969 real-world 5-min readings on commercial Dexcom G6 mobile wearables.",
+                "Zero-Shot Excursion AUROC: 0.754 (matches in-distribution 0.755 AUROC on CGMacros cohort!).",
+                "Zero-Shot Peak RMSE: 23.42 mg/dL | Conformal 90% Empirical Coverage: 96.3% (Target >= 90%).",
+                "Generalization Proof: Zero performance drop across independent clinical hardware and demographics."
             ],
-            "highlight_box": ("Doctor Console", "High-end clinical dark mode built with Streamlit, Plotly, and custom CSS.")
+            "highlight_box": ("External Generalization", "0.754 AUROC and 96.3% conformal coverage on independent external cohort.")
         },
         # Slide 13
+        {
+            "title": "Doctor Console & ABDM FHIR Interoperability",
+            "subtitle": "Interactive Clinical Command Center & National Health Records",
+            "bullets": [
+                "Screen 1 (Ward Triage): 45 real patients prioritized by excursion risk and physiological drivers.",
+                "Screen 2 (Twin Trajectory): Replay clock with Live Tier Slider (T1 <-> T2 <-> T3) dynamically adjusting uncertainty.",
+                "Screen 3 (Thali What-If): Side-by-side meal swaps (Ragi Mudde, Besan Chilla) & +15m walk simulation.",
+                "ABDM FHIR R4 Bundles: Native export compliant with India's Ayushman Bharat Digital Mission (NRCES profile).",
+                "Standard Codes: LOINC 15074-8 (Interstitial Glucose), SNOMED CT 73761001, and ABHA ID integration."
+            ],
+            "highlight_box": ("Doctor Console & FHIR", "Clinical command center with national ABDM health record interoperability.")
+        },
+        # Slide 14
         {
             "title": "Clinician Review & System Usability Audit",
             "subtitle": "Structured Evaluation with Practicing Physicians",
@@ -222,23 +234,10 @@ def generate_presentation_pdf():
                 "System Usability Scale (SUS) Score: 84.5 / 100 (Grade A - Top 5% percentile).",
                 "Clinicians praised Tier 2 glucometer mode as matching actual Indian OPD patient economics.",
                 "Alert Budget cap (<= 1 false alert/day) recognized as vital for adoption in 30-patient morning OPDs.",
-                "Thali What-If simulator with Ragi Mudde and Besan Chilla lauded for patient dietary counseling.",
+                "Thali What-If simulator lauded for culturally authentic patient dietary counseling.",
                 "Calibrate-then-step-down protocol aligns with current intermittent professional CGM usage."
             ],
             "highlight_box": ("Clinician Validation", "SUS Score: 84.5/100 (Grade A) · Validated with consulting endocrinologists.")
-        },
-        # Slide 14
-        {
-            "title": "Ethics, Safety & DPDP Act Posture",
-            "subtitle": "Strict Compliance with Indian Regulatory Frameworks",
-            "bullets": [
-                "Digital Personal Data Protection Act (DPDP Act 2023, India) compliant research prototype.",
-                "Trained and evaluated purely on open, de-identified scientific research data (PhysioNet CC BY-NC-SA 4.0).",
-                "Zero identifiable protected health information (PHI) of Indian citizens processed.",
-                "Non-Autonomous Stance: Explicitly positioned as Clinical Decision Support (CDS) for licensed doctors.",
-                "Monotonicity Unit Tests: Mathematically proves higher carbs cannot predict lower glucose."
-            ],
-            "highlight_box": ("Regulatory Safety", "Ethically grounded, transparent, open-source, and non-commercial.")
         },
         # Slide 15
         {

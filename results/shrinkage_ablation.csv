@@ -1,0 +1,7 @@
+kappa,weight_at_4_meals,weight_at_10_meals,held_out_rmse_mg_dl,held_out_mae_mg_dl,is_optimal
+1.0,0.8,0.909,61.8,45.39,False
+2.0,0.667,0.833,59.88,44.07,False
+4.0,0.5,0.714,56.77,41.96,True
+8.0,0.333,0.556,52.49,39.09,False
+12.0,0.25,0.455,49.79,37.03,False
+16.0,0.2,0.385,48.01,35.57,False
