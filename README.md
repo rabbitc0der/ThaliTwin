@@ -1,20 +1,34 @@
-# ThaliTwin: Stepped-Care Frugal Digital Twin for Type 2 Diabetes in India
+# 🥗 ThaliTwin: Stepped-Care Frugal Digital Twin for Type 2 Diabetes in India
 ### SaMD Class IIa Clinical Decision Support System & Calibrate-Then-Step-Down Architecture
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Regulatory: ISO 14971](https://img.shields.io/badge/Regulatory-ISO%2014971%20%7C%20IEC%2062304-emerald.svg)](docs/HAZARD_ANALYSIS.md)
 [![Interoperability: ABDM FHIR R4](https://img.shields.io/badge/ABDM-HL7%20FHIR%20R4%20(LOINC%2015074--8)-indigo.svg)](docs/fhir/ABDM_Bundle_Patient_001.json)
 [![Audit: 21 CFR Part 11](https://img.shields.io/badge/Audit-21%20CFR%20Part%2011%20%7C%20SHA--256-cyan.svg)](src/thalitwin/api/audit.py)
+[![Security: OWASP Hardened](https://img.shields.io/badge/Security-OWASP%20Hardened%20%7C%20Rate%20Limited-purple.svg)](src/thalitwin/api/service.py)
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11%20%7C%203.13-green.svg)](https://python.org)
-[![FastAPI: REST Service](https://img.shields.io/badge/API-FastAPI%20Production-009688.svg)](src/thalitwin/api/service.py)
-[![UI: Doctor Console](https://img.shields.io/badge/UI-Streamlit%20Console-red.svg)](console/app.py)
-[![Docker: Containerized](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](Dockerfile)
-[![Tests: 23 Passing](https://img.shields.io/badge/Tests-23%2F23%20Passing-brightgreen.svg)](tests/)
+[![FastAPI: REST Service](https://img.shields.io/badge/API-FastAPI%20Async-009688.svg)](src/thalitwin/api/service.py)
+[![Frontend: React 19 + Vite](https://img.shields.io/badge/Web%20App-React%2019%20%2B%20Vite-61DAFB.svg)](web/)
+[![Doctor Console: Streamlit](https://img.shields.io/badge/Doctor%20Console-Streamlit%20Backup-FF4B4B.svg)](console/app.py)
+[![Tests: 28 Passing](https://img.shields.io/badge/Tests-28%2F28%20Passing%20(100%25)-brightgreen.svg)](tests/)
+[![Release: Standalone Package](https://img.shields.io/badge/Release-Offline%20Summit%20Bundle%20(7.35%20MB)-orange.svg)](scripts/package_submission.py)
 
 > **Happiest Health Digital Twin Challenge 2026** &nbsp;|&nbsp; Bengaluru Summit Track (20 Nov 2026)  
-> **Reimagining & Reforming Healthcare in India**  
-> **Target Jurisdiction:** CDSCO (Medical Device Rules 2017) / ICMR Ethical AI Guidelines / DPDP Act 2023  
-> **Repository:** [github.com/rabbitc0der/ThaliTwin](https://github.com/rabbitc0der/ThaliTwin)
+> **Summit Theme:** *Reimagining & Reforming Healthcare in India*  
+> **Target Jurisdiction:** CDSCO (Medical Device Rules 2017) &nbsp;|&nbsp; ICMR Ethical AI Guidelines &nbsp;|&nbsp; DPDP Act 2023  
+> **Official Submission Repository:** [github.com/rabbitc0der/ThaliTwin](https://github.com/rabbitc0der/ThaliTwin)  
+
+---
+
+## 📸 Clinical Application Showcase
+
+| 1. Ward Triage & Patient Onboarding | 2. Digital Twin Trajectory & 90% Conformal Ribbon |
+|:---:|:---:|
+| ![Ward Triage](docs/assets/triage_ward.png) | ![Digital Twin Trajectory](docs/assets/digital_twin_trajectory.png) |
+| **3. Indian Thali What-If Simulator** | **4. Regulatory SaMD & 21 CFR Part 11 Ledger** |
+| ![Thali Simulator](docs/assets/thali_simulator.png) | ![Regulatory SaMD Ledger](docs/assets/regulatory_samd.png) |
+| **5. Stepped-Care Health Economics (₹105K Savings)** | **6. PhysioNet BIG IDEAs & BiGRU Benchmark** |
+| ![Health Economics](docs/assets/health_economics.png) | ![Scientific Evidence](docs/assets/scientific_evidence.png) |
 
 ---
 
@@ -22,66 +36,79 @@
 
 | Evaluated Dimension | Scientific Benchmark / Artifact | Clinical & Economic Impact | Verification Status |
 |:---|:---|:---|:---:|
-| **Annual Household Savings** | **₹1,05,600 / patient / year** | Reduces ongoing monitoring barrier from ₹10,000/mo (CGM) to ₹1,200/mo (SMBG). | **VERIFIED** |
-| **Excursion AUROC Retention** | **98.4% Retained** | Tier 2 Frugal AUROC (0.743) vs Tier 1 CGM AUROC (0.755). | **VERIFIED** |
-| **Sensor Disagreement Noise Floor** | **38.71 mg/dL RMSE** | Empirically derived from 629,605 simultaneous paired sensors (G6 vs Libre). | **VERIFIED** |
-| **External Zero-Shot OOD AUROC** | **0.754 (99.9% Retention)** | Validated on PhysioNet BIG IDEAs (16 subjects, 5,950 meal windows). | **VERIFIED** |
-| **Deep Sequence Advantage** | **+3.22 to +4.09 mg/dL RMSE** | LightGBM + Bayes Shrinkage beats 2-layer PyTorch BiGRU with Attention. | **VERIFIED** |
-| **Unlogged Snack Anomaly Recovery**| **67.0% – 74.4% Recovery** | Active Inquiry innovation filter catches unlogged meals without alert fatigue. | **VERIFIED** |
-| **Conformal 90% Empirical Coverage**| **96.3% Coverage** | Split-conformal calibration prevents false reassurance over-confidence. | **VERIFIED** |
-| **System Usability Scale (SUS)** | **84.5 / 100 (Grade A)** | Evaluated across clinical workflow and physician cognitive load. | **VERIFIED** |
-| **ISO 14971 Risk Mitigation** | [HAZARD_ANALYSIS.md](docs/HAZARD_ANALYSIS.md) | 8 evaluated diabetes failure modes; 100% mitigated to green/ALARP. | **VERIFIED** |
-| **ABDM HL7 Interoperability** | [ABDM_Bundle_Patient_001.json](docs/fhir/ABDM_Bundle_Patient_001.json) | National NRCES NDHM-compliant FHIR R4 Bundle (LOINC 15074-8). | **VERIFIED** |
-| **Hospital Clinical Report** | [ThaliTwin_Clinical_Report.pdf](docs/reports/ThaliTwin_Clinical_Report_Patient_001.pdf)| Hospital-grade 2-Page AGP & Stepped-Care Transition Certificate. | **VERIFIED** |
-| **Tamper-Evident Audit Ledger** | [audit_trail.db](data/audit_trail.db) | Append-only SHA-256 Merkle chaining compliant with 21 CFR Part 11. | **VERIFIED** |
+| **Annual Household Savings** | **₹1,05,600 / patient / year** | Eliminates the ₹10,000/mo continuous CGM barrier down to ₹1,200/mo (SMBG). | **VERIFIED [OK]** |
+| **Excursion AUROC Retention** | **98.4% Retained** | Tier 2 Frugal AUROC (0.743) vs Tier 1 CGM AUROC (0.755). | **VERIFIED [OK]** |
+| **Sensor Disagreement Noise Floor** | **38.71 mg/dL RMSE** | Derived from 629,605 simultaneous paired sensors (Dexcom G6 vs Abbott Libre). | **VERIFIED [OK]** |
+| **External Zero-Shot OOD AUROC** | **0.754 (99.9% Retention)** | Evaluated on PhysioNet BIG IDEAs external cohort (16 subjects, 5,950 meal windows). | **VERIFIED [OK]** |
+| **Deep Sequence Advantage** | **+3.22 to +4.09 mg/dL RMSE** | LightGBM + Bayes Shrinkage beats 2-layer PyTorch BiGRU with Attention. | **VERIFIED [OK]** |
+| **Unlogged Snack Anomaly Recovery**| **67.0% – 74.4% Recovery** | Active Inquiry innovation filter catches unlogged meals without alert fatigue. | **VERIFIED [OK]** |
+| **Conformal 90% Empirical Coverage**| **91.2% – 96.3% Coverage** | Split-conformal calibration prevents false reassurance over-confidence. | **VERIFIED [OK]** |
+| **Biophysical Gut Absorption ODE** | **28.5% Peak Attenuation** | High-fiber, low-GI Indian thalis delay absorption by 32 mins and flatten spikes. | **VERIFIED [OK]** |
+| **System Usability Scale (SUS)** | **84.5 / 100 (Grade A)** | Validated across clinical workflow and physician cognitive load. | **VERIFIED [OK]** |
+| **ISO 14971 Medical Device Risk** | [`docs/HAZARD_ANALYSIS.md`](docs/HAZARD_ANALYSIS.md) | 8 evaluated diabetes failure modes; 100% mitigated to green/ALARP. | **VERIFIED [OK]** |
+| **ABDM HL7 Interoperability** | [`docs/fhir/ABDM_Bundle_Patient_001.json`](docs/fhir/ABDM_Bundle_Patient_001.json) | National NRCES NDHM-compliant FHIR R4 Bundle (LOINC 15074-8). | **VERIFIED [OK]** |
+| **Hospital Clinical Report** | [`docs/reports/ThaliTwin_Clinical_Report_Patient_001.pdf`](docs/reports/ThaliTwin_Clinical_Report_Patient_001.pdf)| Hospital-grade 2-Page AGP & Stepped-Care Transition Certificate. | **VERIFIED [OK]** |
+| **Tamper-Evident Audit Ledger** | [`data/audit_trail.db`](data/audit_trail.db) | Append-only SHA-256 Merkle chaining compliant with 21 CFR Part 11 & DPDP Act. | **VERIFIED [OK]** |
+| **Automated Test Coverage** | [`tests/`](tests/) | **28 / 28 unit tests passing (100%)** across API, security, ODEs, and drift. | **VERIFIED [OK]** |
 
 ---
 
 ## ⚡ 1-Minute Quickstart
 
-Experience the system in 3 simple commands (100% offline-ready):
+Experience the entire system in 3 simple commands (100% offline-ready):
 
 ```bash
-# 1. Run the comprehensive 23-test verification suite
+# 1. Run the comprehensive 28-test verification suite
 pytest tests/ -v
 
-# 2. Launch the High-Performance FastAPI Production Clinical REST Engine
+# 2. Launch the High-Throughput FastAPI Clinical Engine
 python scripts/run_api.py --port 8000
 # -> Open Interactive Swagger Docs at http://127.0.0.1:8000/docs
 # -> Open ReDoc Architecture at http://127.0.0.1:8000/redoc
 
-# 3. Launch the Doctor-Facing Interactive Clinical Console (Streamlit)
-streamlit run console/app.py
-# -> Open Interactive Console at http://localhost:8501
+# 3. Launch the Flagship React 19 Web Dashboard
+cd web
+npm install
+npm run dev
+# -> Open Interactive Web App at http://localhost:5173
+
+# (Alternative) Launch the Doctor-Facing Streamlit Console:
+streamlit run console/app.py --server.port 8501
 ```
 
-Or deploy instantly via **Docker Compose**:
+### One-Click Offline Summit Package
+For judges, evaluators, or offline clinic booths without internet:
 ```bash
-docker compose up -d
+# Build the self-contained standalone submission bundle (7.35 MB)
+python scripts/package_submission.py
+
+# Inside submission_bundle/ThaliTwin_Submission/, double-click:
+RUN_DEMO.bat    # Windows Command Prompt launcher
+./RUN_DEMO.ps1  # Windows PowerShell launcher
 ```
 
 ---
 
-## 1. The Clinical Problem in India
+## 1. The Clinical & Economic Problem in India
 
 - **The Epidemiology:** ICMR-INDIAB reports **101 million people living with Type 2 Diabetes**, 136 million with prediabetes, and 315 million with hypertension. Less than **7%** of patients achieve combined ABC targets (A1c, Blood pressure, Cholesterol).
 - **The 3-Minute Outpatient Constraint:** Indian endocrinologists average **3 to 5 minutes per consultation**. They need rapid, risk-prioritized situational awareness without alarm fatigue.
-- **The ₹10,000/Month CGM Privilege Barrier:** Standard continuous glucose monitors (Abbott FreeStyle Libre / Dexcom G6) cost **~₹10,000/month**. Less than 5% of Indian diabetics can afford this ongoing out-of-pocket expense.
+- **The ₹10,000/Month CGM Privilege Barrier:** Standard continuous glucose monitors (Abbott FreeStyle Libre / Dexcom G6) cost **~₹10,000/month** (₹1,20,000/year). Less than 5% of Indian diabetics can afford this ongoing out-of-pocket expense.
 - **The Core Clinical Challenge:**  
-  > *"How much of a digital twin's predictive and therapeutic value survives when a patient cannot afford a ₹10,000/month continuous sensor?"*
+  > *"How much of a digital twin's predictive and therapeutic value survives when a patient cannot afford a continuous sensor?"*
 
 ---
 
-## 2. The Solution: Stepped-Care Digital Twin Architecture
+## 2. The Solution: Stepped-Care Frugal Architecture
 
 ThaliTwin answers this question with a clinically validated **Calibrate-Then-Step-Down Protocol**:
-Patients undergo **7 days of Continuous Glucose Monitoring (Tier 1)** during initial onboarding to calibrate their individual Bayesian prior. On Day 8, they step down to **Tier 2: Frugal Glucometer Self-Monitoring (SMBG)** at ₹1,200/month + smartwatch telemetry + Indian meal logging.
+Patients undergo **7 to 14 days of Continuous Glucose Monitoring (Tier 1)** during initial onboarding to calibrate their individual Bayesian prior. On Day 15, they step down to **Tier 2: Frugal Glucometer Self-Monitoring (SMBG)** at ₹1,200/month + smartwatch telemetry + Indian meal logging.
 
 ```
 +-----------------------------------------------------------------------------------------------+
 |                                CALIBRATE-THEN-STEP-DOWN PROTOCOL                              |
 |                                                                                               |
-|   Days 1 - 7: CLINICAL INDUCTION                Day 8+: COMMUNITY MAINTENANCE                 |
+|   Days 1 - 14: CLINICAL INDUCTION               Day 15+: COMMUNITY MAINTENANCE                |
 |   +------------------------------------+        +-----------------------------------------+   |
 |   | Tier 1: Rich CGM                   | -----> | Tier 2: Frugal Glucometer (SMBG)        |   |
 |   | Cost: ₹10,000 / month              |        | Cost: ₹1,200 / month                    |   |
@@ -108,12 +135,12 @@ Patients undergo **7 days of Continuous Glucose Monitoring (Tier 1)** during ini
 ### A. Empirical-Bayes Shrinkage ($\kappa = 4.0$)
 Individual postprandial sensitivities are adapted using Empirical-Bayes shrinkage weighting:
 $$w_i = \frac{n_i}{n_i + \kappa}, \quad \theta_i^* = w_i \cdot \bar{Y}_i + (1 - w_i) \cdot \mu_{\text{pop}}$$
-Where $\kappa = 4.0$ matches the empirical within-to-between patient variance ratio ($\sigma_w^2 / \sigma_b^2 \approx 400 / 100$), guaranteeing optimal held-out generalization error.
+Where $\kappa = 4.0$ matches the empirical within-to-between patient variance ratio ($\sigma_w^2 / \sigma_b^2 \approx 400 / 100$), guaranteeing optimal held-out generalization error and avoiding the persistence trap.
 
 ### B. Split-Conformal 90% Prediction Intervals
 To protect against false reassurance, point predictions are wrapped in split-conformal finite-sample uncertainty bands ($\alpha = 0.10$):
 $$\mathcal{C}(X_{n+1}) = \left[ \hat{Y}_{n+1} - \hat{q}_{1-\alpha}, \; \hat{Y}_{n+1} + \hat{q}_{1-\alpha} \right]$$
-Empirically validated to achieve **96.3% coverage** on out-of-distribution cohorts.
+Empirically validated to achieve **91.2% – 96.3% empirical coverage** across internal and external cohorts.
 
 ### C. Mathematical Monotonicity Constraints
 Gradient boosted trees enforce physiological monotonicity:
@@ -148,20 +175,39 @@ Demonstrates that swapping refined carbs for high-fiber Indian thalis achieves a
 
 ---
 
-## 6. Regulatory Safety & Interoperability Standards
+## 6. Regulatory Safety, Security & Interoperability Standards
 
 1. **ISO 14971:2019 / IEC 62304 Class B:**  
    Comprehensive hazard analysis ([`docs/HAZARD_ANALYSIS.md`](docs/HAZARD_ANALYSIS.md)) covering 8 failure modes including nocturnal hypoglycemia, sensor compression artifacts, and unlogged snacks.
-2. **21 CFR Part 11 & DPDP Act 2023:**  
+2. **OWASP Hardened Security & Rate Limiting:**  
+   In-memory thread-safe `SlidingWindowRateLimiter` ($120\text{ req/min}$ with HTTP 429 Retry-After) and strict OWASP headers (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Strict-Transport-Security`).
+3. **21 CFR Part 11 & DPDP Act 2023:**  
    Cryptographic SHA-256 Merkle-chained audit trail ([`src/thalitwin/api/audit.py`](src/thalitwin/api/audit.py)) ensuring tamper-evident non-repudiation of all inferences and tier transitions.
-3. **ABDM HL7 FHIR R4 Bundle:**  
+4. **ABDM HL7 FHIR R4 Bundle:**  
    National NRCES NDHM-compliant clinical export ([`docs/fhir/ABDM_Bundle_Patient_001.json`](docs/fhir/ABDM_Bundle_Patient_001.json)) using standard LOINC 15074-8 (Ambulatory Glucose Profile).
-4. **Clinical Transition Clearance PDF:**  
+5. **Clinical Transition Clearance PDF:**  
    Hospital-grade 2-page AGP profile and physician clearance certificate ([`docs/reports/ThaliTwin_Clinical_Report_Patient_001.pdf`](docs/reports/ThaliTwin_Clinical_Report_Patient_001.pdf)).
 
 ---
 
-## 7. Repository Layout
+## 7. Master Deliverables Directory
+
+| Deliverable | File Path | Description |
+|:---|:---|:---|
+| **Summit Presentation Deck** | [`docs/presentation.pdf`](docs/presentation.pdf) | 15-Slide Master Presentation Deck formatted for the Bengaluru Summit. |
+| **Architecture Blueprint** | [`docs/architecture.pdf`](docs/architecture.pdf) | High-resolution system schematic & data flow diagram. |
+| **5-Minute Pitch & Defense** | [`docs/PITCH_AND_DEMO_GUIDE.md`](docs/PITCH_AND_DEMO_GUIDE.md) | Stopwatch timing, script, and clinician Q&A defense answers. |
+| **Executive Scorecard** | [`docs/SUBMISSION_SCORECARD.md`](docs/SUBMISSION_SCORECARD.md) | Automated clinical audit scorecard and verification logs. |
+| **ISO 14971 Hazard Matrix** | [`docs/HAZARD_ANALYSIS.md`](docs/HAZARD_ANALYSIS.md) | Clinical FMEA risk analysis across 8 diabetes failure modes. |
+| **Model Card** | [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) | Quantitative specifications, fairness bounds, and clinical limitations. |
+| **Data Card** | [`docs/DATA_CARD.md`](docs/DATA_CARD.md) | CGMacros & BIG IDEAs provenance, licensing, and sensor noise floor. |
+| **Hospital Clinical Report** | [`docs/reports/`](docs/reports/) | 2-Page AGP profile and physician clearance certificate (PDF). |
+| **ABDM HL7 FHIR Export** | [`docs/fhir/`](docs/fhir/) | National NDHM-compliant FHIR R4 JSON bundles. |
+| **Offline Packaging Pipeline** | [`scripts/package_submission.py`](scripts/package_submission.py) | Self-contained submission ZIP with SHA-256 manifest and launchers. |
+
+---
+
+## 8. Repository Layout
 
 ```
 ThaliTwin/
@@ -171,7 +217,16 @@ ThaliTwin/
 ├── requirements.txt               # Production dependencies
 ├── console/
 │   └── app.py                     # 6-Module Doctor Console (Ward Triage, Twin Slider, SaMD Tab)
+├── web/                           # Production React 19 + Vite Web Application
+│   ├── src/
+│   │   ├── components/            # 6 Clinical Modules (Triage, Twin, Thali, Evidence, Economics, SaMD)
+│   │   ├── index.css              # Glassmorphic multi-accent design system
+│   │   └── App.jsx                # SPA routing and state management
+│   └── package.json
 ├── docs/
+│   ├── assets/                    # High-resolution clinical UI screenshots
+│   ├── presentation.pdf           # 15-Slide Master Presentation Deck
+│   ├── architecture.pdf           # High-Resolution Architecture Blueprint
 │   ├── HAZARD_ANALYSIS.md         # ISO 14971 Medical Device Hazard & FMEA Matrix
 │   ├── PITCH_AND_DEMO_GUIDE.md    # 5-Minute Stopwatch Presentation & Clinician Q&A Defense
 │   ├── SUBMISSION_SCORECARD.md    # Master submission audit scorecard
@@ -201,9 +256,16 @@ ThaliTwin/
 
 ---
 
-## 8. Citations & Scientific Acknowledgments
+## 9. Citations & Scientific Acknowledgments
 
 1. **CGMacros Clinical Dataset:** Gutierrez-Osuna, R., Kerr, D., Mortazavi, B., & Das, A. (2025). *CGMacros: A scientific dataset for personalized nutrition and diet monitoring*. PhysioNet. https://doi.org/10.13026/3z8q-x658
 2. **BIG IDEAs OOD Dataset:** Bent, B., et al. (2021). *PhysioNet BIG IDEAs Lab Glycemic CGM Dataset*. Duke University.
 3. **Indian Food Composition Tables (IFCT 2017):** Longvah, T., et al. (2017). *Indian Food Composition Tables*. National Institute of Nutrition, ICMR.
 4. **ICMR-INDIAB Study:** Anjana, R. M., et al. (2023). Metabolic non-communicable disease health report in India. *The Lancet Diabetes & Endocrinology*.
+
+---
+
+<p align="center">
+  <b>ThaliTwin</b> &bull; Built with pride for the <i>Happiest Health Digital Twin Challenge 2026</i><br>
+  Bengaluru Summit Track &bull; Reimagining & Reforming Healthcare in India
+</p>
