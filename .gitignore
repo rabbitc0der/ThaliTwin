@@ -12,6 +12,8 @@ venv/
 data/raw/
 *.zip
 *.csv.gz
+*.db
+
 
 # Pytest / Cache
 .pytest_cache/

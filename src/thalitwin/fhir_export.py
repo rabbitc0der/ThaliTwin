@@ -189,7 +189,13 @@ def generate_stepped_care_careplan(
         }
     }
 
-def export_abdm_bundle(subject_id: int, age: int, gender: str, phenotype: str, glucose_readings: List[Dict]) -> Dict:
+def export_abdm_bundle(
+    subject_id: int,
+    age: int,
+    gender: str,
+    phenotype: str,
+    glucose_readings: Optional[List[Dict]] = None
+) -> Dict:
     """Exports a unified ABDM FHIR R4 Transaction/Collection Bundle."""
     entries = []
     
@@ -202,7 +208,15 @@ def export_abdm_bundle(subject_id: int, age: int, gender: str, phenotype: str, g
     entries.append({"resource": cp})
     
     # 3. Observations
-    for r in glucose_readings:
+    readings = glucose_readings if glucose_readings is not None else [
+        {
+            "glucose": 115.0,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "tier": "T2_Frugal",
+            "is_excursion": False
+        }
+    ]
+    for r in readings:
         obs = generate_glucose_observation(
             subject_id=subject_id,
             glucose_mg_dl=r["glucose"],
@@ -211,6 +225,7 @@ def export_abdm_bundle(subject_id: int, age: int, gender: str, phenotype: str, g
             is_excursion=r.get("is_excursion", False)
         )
         entries.append({"resource": obs})
+
         
     return {
         "resourceType": "Bundle",
