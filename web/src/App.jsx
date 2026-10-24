@@ -128,6 +128,7 @@ export default function App() {
           {activeTab === 'trust' && (
             <TrustAndEvidence
               evidenceData={evidence}
+              benchmarks={clinicalData.benchmarks}
             />
           )}
 

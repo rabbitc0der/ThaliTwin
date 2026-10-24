@@ -166,12 +166,13 @@ def main():
     manifest = {
         "project": "ThaliTwin",
         "track": "Happiest Health Digital Twin Challenge 2026 (Bengaluru Summit)",
-        "regulatory_tier": "CDSCO SaMD Class IIa / ISO 14971 Medical Risk Controlled",
+        "regulatory_tier": "CDSCO SaMD Research Prototype (Proposed Class B Track; prospective validation is future work) / ISO 14971 Risk Controlled",
         "git_commit": get_git_commit(),
         "package_timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "key_deliverables": {
             "slide_deck": "docs/presentation.pdf",
             "architecture_blueprint": "docs/architecture.pdf",
+            "benchmark_report": "docs/BENCHMARK_REPORT.md",
             "scorecard": "docs/SUBMISSION_SCORECARD.md",
             "hazard_analysis": "docs/HAZARD_ANALYSIS.md",
             "fhir_bundle_sample": "docs/fhir/ABDM_Bundle_Patient_001.json",
@@ -179,11 +180,14 @@ def main():
             "web_spa_index": "web/dist/index.html"
         },
         "scientific_benchmarks": {
-            "primary_cohort_auroc": 0.755,
-            "zero_shot_ood_auroc_big_ideas": 0.754,
-            "deep_baseline_comparison": "LightGBM RMSE 18.25 vs BiGRU RMSE 21.47 mg/dL (+3.22 mg/dL improvement)",
-            "conformal_coverage_guarantee": "91.2% (Target 90.0% Marginal)",
-            "stepped_care_cost_reduction": "82.5% annual savings (₹12,600 vs ₹72,000 continuous CGM)"
+            "tier1_rich_cgm_auroc": "0.765 [95% CI: 0.718, 0.803]",
+            "tier2_frugal_smbg_auroc": "0.748 [95% CI: 0.704, 0.786] (93.5% above-chance retention)",
+            "tier3_triage_no_sensor_auroc": "0.693 [95% CI: 0.640, 0.741] (72.7% above-chance retention)",
+            "persistence_baseline_auroc": "0.696 [95% CI: 0.652, 0.735] (statistically beaten by T1 & T2)",
+            "within_person_auroc": "0.794 (N=34 evaluable participants; disproves between-subject confounding)",
+            "conformal_coverage": "90.0% Empirical (Target 90.0%), half-width ±55.5 mg/dL",
+            "alert_fatigue_budget": "86.2% sensitivity at <= 0.5 false alerts/day, lead time 46 mins",
+            "stepped_care_economics": "77% annual cost reduction (₹27,560 all-in vs ₹1,20,000 continuous CGM, saving ₹92,440/yr)"
         },
         "checksums_sha256": {}
     }
@@ -191,6 +195,7 @@ def main():
     key_files_to_hash = [
         os.path.join(staging_dir, "docs", "presentation.pdf"),
         os.path.join(staging_dir, "docs", "architecture.pdf"),
+        os.path.join(staging_dir, "docs", "BENCHMARK_REPORT.md"),
         os.path.join(staging_dir, "docs", "SUBMISSION_SCORECARD.md"),
         os.path.join(staging_dir, "docs", "HAZARD_ANALYSIS.md"),
         os.path.join(staging_dir, "README.md"),

@@ -101,15 +101,15 @@ def export_web_dataset():
             "notes": d.clinical_notes
         })
 
-    # 3. Stepped-Care Economics
+    # 3. Stepped-Care Economics (Updated with Realistic Costs & Clustered Bootstrap CIs)
     economics = [
         {
             "tier": "Tier 1: Rich CGM",
-            "sensors": "Dexcom G6 Pro (5m) + Fitbit + Meals",
+            "sensors": "Continuous CGM (5m) + Fitbit + Meals",
             "monthlyCost": 10000,
-            "auroc": 0.755,
-            "auprc": 0.804,
-            "sensitivity": 0.824,
+            "auroc": 0.765,
+            "ci95": [0.718, 0.803],
+            "sensitivity": 0.862,
             "peakRmse": 34.03,
             "conformalBand": 55.48,
             "savingsPct": 0.0,
@@ -117,27 +117,27 @@ def export_web_dataset():
         },
         {
             "tier": "Tier 2: Frugal SMBG",
-            "sensors": "Glucometer (3-4/day) + Fitbit + Meals",
-            "monthlyCost": 1200,
-            "auroc": 0.743,
-            "auprc": 0.800,
-            "sensitivity": 0.826,
+            "sensors": "2-3 SMBG strips/day + Fitbit + Meals",
+            "monthlyCost": 2296, # Rs 27,560 / 12
+            "auroc": 0.748,
+            "ci95": [0.704, 0.786],
+            "sensitivity": 0.862,
             "peakRmse": 34.67,
             "conformalBand": 56.48,
-            "savingsPct": 88.0,
-            "retainedPct": 98.4
+            "savingsPct": 77.0,
+            "retainedPct": 93.5 # Retention above chance floor of 0.5
         },
         {
-            "tier": "Tier 3: Triage Fitbit",
+            "tier": "Tier 3: Triage No-Sensor",
             "sensors": "Fitbit Sense + Static EHR Labs Only",
             "monthlyCost": 0,
-            "auroc": 0.688,
-            "auprc": 0.752,
+            "auroc": 0.693,
+            "ci95": [0.640, 0.741],
             "sensitivity": 0.825,
             "peakRmse": 34.74,
             "conformalBand": 55.98,
-            "savingsPct": 99.0,
-            "retainedPct": 91.1
+            "savingsPct": 100.0,
+            "retainedPct": 72.7 # Retention above chance floor of 0.5
         }
     ]
 
@@ -158,12 +158,20 @@ def export_web_dataset():
         "susScore": 84.5
     }
 
+    # 5. Load Clinical Rigor Benchmarks if present
+    benchmarks_path = os.path.join(os.path.dirname(__file__), "..", "results", "clinical_rigor_benchmarks.json")
+    benchmarks = {}
+    if os.path.exists(benchmarks_path):
+        with open(benchmarks_path, "r", encoding="utf-8") as f:
+            benchmarks = json.load(f)
+
     bundle = {
         "patients": patients,
         "sampleTrajectories": sample_trajectories,
         "dishes": dishes,
         "economics": economics,
-        "evidence": evidence
+        "evidence": evidence,
+        "benchmarks": benchmarks
     }
 
     out_file = os.path.join(WEB_DATA_DIR, "clinicalData.json")

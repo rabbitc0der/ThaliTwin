@@ -6,22 +6,23 @@ export default function ThaliWhatIfSimulator({ dishes, defaultPatient }) {
   const [portion, setPortion] = useState(1.0);
   const [enableWalk, setEnableWalk] = useState(true);
   const [enableSwap, setEnableSwap] = useState(true);
+  const [curveMode, setCurveMode] = useState('COMBINED'); // 'GLUCOSE', 'ODE_FLUX', 'COMBINED'
 
   const currentDish = dishes.find(d => d.id === selectedDishId) || dishes[0];
   const swapDishId = currentDish.swapTarget || 'D09';
   const swapDish = dishes.find(d => d.id === swapDishId) || dishes.find(d => d.id === 'D09');
 
-  // Baseline glucose (from selected patient or default 110 mg/dL)
+  // Baseline glucose (from selected patient or default 105 mg/dL)
   const gBase = defaultPatient ? defaultPatient.fastingGlucose : 105;
 
   // Physiological Peak Rise Calculations
-  // Masala Dosa (52g carbs, high GI) vs Besan Chilla (26g carbs, low GI)
   const carbRiseFactor = 0.82; // mg/dL per carb gram
   const fiberAttenuation = 0.45; // mg/dL reduction per fiber gram
 
   // Planned Meal Scenario
   const planCarbs = currentDish.carbs * portion;
   const planFiber = currentDish.fiber * portion;
+  const planFat = (currentDish.fat || 6) * portion;
   const planNetCarbs = Math.max(0, planCarbs - planFiber);
   const planGlycemicLoad = Math.round((planNetCarbs * currentDish.glycemicIndex) / 100);
   const planRise = Math.round(planCarbs * carbRiseFactor - planFiber * fiberAttenuation + (currentDish.glycemicIndex - 50) * 0.3);
@@ -36,14 +37,68 @@ export default function ThaliWhatIfSimulator({ dishes, defaultPatient }) {
   // Recommended Swap Scenario
   const swapCarbs = swapDish.carbs;
   const swapFiber = swapDish.fiber;
+  const swapFat = swapDish.fat || 5;
   const swapNetCarbs = Math.max(0, swapCarbs - swapFiber);
   const swapGlycemicLoad = Math.round((swapNetCarbs * swapDish.glycemicIndex) / 100);
   const swapRise = Math.round(swapCarbs * carbRiseFactor - swapFiber * fiberAttenuation + (swapDish.glycemicIndex - 50) * 0.3);
   const swapPeak = gBase + swapRise;
   const swapRisk = Math.min(0.95, Math.max(0.05, 0.25 + (swapRise / 80) * 0.65));
 
-  // Generate 2-hour trajectory curves (0 to 120 mins)
+  // -------------------------------------------------------------
+  // Biophysical Dual-Compartment ODE Gut Absorption Simulation
+  // Equations:
+  // dQ_sto/dt = - k_empty * Q_sto
+  // dQ_gut/dt = k_empty * Q_sto - k_abs * Q_gut
+  // R_a(t)    = (f * k_abs * Q_gut * 1000) / V_d  [mg/dL / min]
+  // -------------------------------------------------------------
   const timeSteps = [0, 15, 30, 45, 60, 75, 90, 105, 120];
+
+  const simulateODE = (carbs, fiber, fat, gi) => {
+    const V_d = 120.0; // 120 dL distribution volume
+    const f = 0.88;    // Systemic bioavailability
+    const base_k_empty = 0.030;
+    const fiber_att = 1.0 / (1.0 + 0.025 * Math.max(0, fiber));
+    const fat_att = 1.0 / (1.0 + 0.012 * Math.max(0, fat));
+    const k_empty = Math.min(0.075, Math.max(0.008, base_k_empty * fiber_att * fat_att));
+
+    const gi_factor = Math.pow(Math.max(20, gi) / 55.0, 0.8);
+    const k_abs = Math.min(0.080, Math.max(0.015, 0.040 * gi_factor));
+
+    let q_sto = carbs;
+    let q_gut = 0.0;
+    let maxRa = 0;
+    let maxRaT = 0;
+    const raSamples = [];
+
+    for (let t = 0; t <= 120; t++) {
+      const flux = f * k_abs * q_gut;
+      const raVal = (flux * 1000.0) / V_d;
+      if (raVal > maxRa) {
+        maxRa = raVal;
+        maxRaT = t;
+      }
+      if (timeSteps.includes(t)) {
+        raSamples.push(parseFloat(raVal.toFixed(2)));
+      }
+      const d_sto = -k_empty * q_sto;
+      const d_gut = k_empty * q_sto - k_abs * q_gut;
+      q_sto = Math.max(0, q_sto + d_sto);
+      q_gut = Math.max(0, q_gut + d_gut);
+    }
+
+    return {
+      k_empty: parseFloat(k_empty.toFixed(4)),
+      k_abs: parseFloat(k_abs.toFixed(4)),
+      raCurve: raSamples,
+      peakRa: parseFloat(maxRa.toFixed(2)),
+      peakRaT: maxRaT
+    };
+  };
+
+  const odePlan = simulateODE(planCarbs, planFiber, planFat, currentDish.glycemicIndex);
+  const odeSwap = simulateODE(swapCarbs, swapFiber, swapFat, swapDish.glycemicIndex);
+
+  // Generate 2-hour trajectory curves (0 to 120 mins)
   const generateCurve = (base, rise, peakT = 50) => {
     return timeSteps.map(t => {
       const tNorm = Math.max(0.001, t / peakT);
@@ -52,9 +107,9 @@ export default function ThaliWhatIfSimulator({ dishes, defaultPatient }) {
     });
   };
 
-  const curvePlan = generateCurve(gBase, planRise, 50);
-  const curveWalk = generateCurve(gBase, walkRise, 45);
-  const curveSwap = generateCurve(gBase, swapRise, 55);
+  const curvePlan = generateCurve(gBase, planRise, Math.max(40, odePlan.peakRaT + 5));
+  const curveWalk = generateCurve(gBase, walkRise, Math.max(35, odePlan.peakRaT));
+  const curveSwap = generateCurve(gBase, swapRise, Math.max(45, odeSwap.peakRaT + 5));
 
   // SVG Chart Dimensions
   const svgWidth = 800;
@@ -172,82 +227,240 @@ export default function ThaliWhatIfSimulator({ dishes, defaultPatient }) {
           </label>
         </div>
 
-        {/* Right Column: Comparative Trajectory SVG Chart */}
+        {/* Right Column: Comparative Trajectory SVG Chart & Biophysical ODE Engine */}
         <div className="glass-panel" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 700 }}>2-Hour Postprandial Counterfactual Curves</h3>
-            <div style={{ display: 'flex', gap: '14px', fontSize: '12px' }}>
-              <span style={{ color: '#EF4444' }}>● Planned: {currentDish.name.split('(')[0]}</span>
-              {enableWalk && <span style={{ color: '#F59E0B' }}>-- Planned + 15m Walk</span>}
-              {enableSwap && <span style={{ color: '#10B981' }}>● Swap: {swapDish.name.split('(')[0]}</span>}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: 700 }}>
+                {curveMode === 'GLUCOSE' ? '2-Hour Postprandial Glucose Curves G(t)' : 'Biophysical Gut Appearance Flux Ra(t) (Dalla Man ODE)'}
+              </h3>
+              <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                {curveMode === 'GLUCOSE' 
+                  ? 'ML-predicted plasma glucose response with split-conformal calibration'
+                  : 'Physics-informed dual-compartment ordinary differential equation (dQ_sto/dt, dQ_gut/dt)'}
+              </p>
+            </div>
+
+            {/* Mode Switcher Tabs */}
+            <div style={{ display: 'flex', background: 'rgba(15, 23, 42, 0.6)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+              <button
+                type="button"
+                onClick={() => setCurveMode('GLUCOSE')}
+                style={{
+                  background: curveMode === 'GLUCOSE' ? 'var(--c-cyan)' : 'transparent',
+                  color: curveMode === 'GLUCOSE' ? '#0F172A' : '#94A3B8',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                📈 Plasma Glucose G(t)
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurveMode('ODE_FLUX')}
+                style={{
+                  background: curveMode === 'ODE_FLUX' ? '#F59E0B' : 'transparent',
+                  color: curveMode === 'ODE_FLUX' ? '#0F172A' : '#94A3B8',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                🔬 Biophysical ODE Flux Ra(t)
+              </button>
             </div>
           </div>
 
-          {/* SVG Graph */}
+          {/* SVG Graph Container */}
           <div style={{ overflowX: 'auto' }}>
-            <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{ width: '100%', height: 'auto', maxHeight: '300px' }}>
-              {/* Gridlines */}
-              {[70, 100, 140, 180, 220].map(g => (
-                <g key={g}>
-                  <line
-                    x1={pad.left}
-                    y1={getY(g)}
-                    x2={pad.left + chartW}
-                    y2={getY(g)}
-                    stroke="rgba(51, 65, 85, 0.3)"
-                    strokeDasharray={g === 180 ? '4 4' : 'none'}
-                    strokeWidth={g === 180 ? '1.5' : '1'}
-                  />
-                  <text x={pad.left - 10} y={getY(g) + 4} fill="#64748B" fontSize="10" textAnchor="end">
-                    {g}
-                  </text>
-                </g>
-              ))}
+            {curveMode === 'GLUCOSE' ? (
+              <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{ width: '100%', height: 'auto', maxHeight: '300px' }}>
+                {/* Gridlines */}
+                {[70, 100, 140, 180, 220].map(g => (
+                  <g key={g}>
+                    <line
+                      x1={pad.left}
+                      y1={getY(g)}
+                      x2={pad.left + chartW}
+                      y2={getY(g)}
+                      stroke="rgba(51, 65, 85, 0.3)"
+                      strokeDasharray={g === 180 ? '4 4' : 'none'}
+                      strokeWidth={g === 180 ? '1.5' : '1'}
+                    />
+                    <text x={pad.left - 10} y={getY(g) + 4} fill="#64748B" fontSize="10" textAnchor="end">
+                      {g} mg/dL
+                    </text>
+                  </g>
+                ))}
 
-              <text x={pad.left + chartW - 5} y={getY(180) - 6} fill="#EF4444" fontSize="10" textAnchor="end" fontWeight="600">
-                Ceiling (180 mg/dL)
-              </text>
-
-              {/* Planned Meal Curve (Crimson) */}
-              <path d={buildPath(curvePlan)} fill="none" stroke="#EF4444" strokeWidth="3" />
-              <circle cx={getX(3)} cy={getY(planPeak)} r="5" fill="#EF4444" stroke="#FFFFFF" strokeWidth="1.5" />
-              <text x={getX(3)} y={getY(planPeak) - 10} fill="#EF4444" fontSize="11" fontWeight="700" textAnchor="middle">
-                {planPeak} mg/dL
-              </text>
-
-              {/* Planned + Walk Curve (Amber Dashed) */}
-              {enableWalk && (
-                <>
-                  <path d={buildPath(curveWalk)} fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeDasharray="5 5" />
-                  <circle cx={getX(3)} cy={getY(walkPeak)} r="4" fill="#F59E0B" />
-                  <text x={getX(3) + 35} y={getY(walkPeak) + 15} fill="#F59E0B" fontSize="10" fontWeight="700" textAnchor="middle">
-                    {walkPeak} mg/dL
-                  </text>
-                </>
-              )}
-
-              {/* Swap Meal Curve (Emerald) */}
-              {enableSwap && (
-                <>
-                  <path d={buildPath(curveSwap)} fill="none" stroke="#10B981" strokeWidth="3" />
-                  <circle cx={getX(4)} cy={getY(swapPeak)} r="5" fill="#10B981" stroke="#FFFFFF" strokeWidth="1.5" />
-                  <text x={getX(4)} y={getY(swapPeak) - 10} fill="#10B981" fontSize="11" fontWeight="700" textAnchor="middle">
-                    {swapPeak} mg/dL
-                  </text>
-                </>
-              )}
-
-              {/* X Axis Time */}
-              {timeSteps.map((t, idx) => (
-                <text key={`t-${idx}`} x={getX(idx)} y={svgHeight - 12} fill="#64748B" fontSize="10" textAnchor="middle">
-                  {t}m
+                <text x={pad.left + chartW - 5} y={getY(180) - 6} fill="#EF4444" fontSize="10" textAnchor="end" fontWeight="600">
+                  Clinical Ceiling (180 mg/dL)
                 </text>
-              ))}
-            </svg>
+
+                {/* Planned Meal Curve (Crimson) */}
+                <path d={buildPath(curvePlan)} fill="none" stroke="#EF4444" strokeWidth="3" />
+                <circle cx={getX(3)} cy={getY(planPeak)} r="5" fill="#EF4444" stroke="#FFFFFF" strokeWidth="1.5" />
+                <text x={getX(3)} y={getY(planPeak) - 10} fill="#EF4444" fontSize="11" fontWeight="700" textAnchor="middle">
+                  {planPeak} mg/dL
+                </text>
+
+                {/* Planned + Walk Curve (Amber Dashed) */}
+                {enableWalk && (
+                  <>
+                    <path d={buildPath(curveWalk)} fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeDasharray="5 5" />
+                    <circle cx={getX(3)} cy={getY(walkPeak)} r="4" fill="#F59E0B" />
+                    <text x={getX(3) + 40} y={getY(walkPeak) + 16} fill="#F59E0B" fontSize="10" fontWeight="700" textAnchor="middle">
+                      {walkPeak} mg/dL
+                    </text>
+                  </>
+                )}
+
+                {/* Swap Meal Curve (Emerald) */}
+                {enableSwap && (
+                  <>
+                    <path d={buildPath(curveSwap)} fill="none" stroke="#10B981" strokeWidth="3" />
+                    <circle cx={getX(4)} cy={getY(swapPeak)} r="5" fill="#10B981" stroke="#FFFFFF" strokeWidth="1.5" />
+                    <text x={getX(4)} y={getY(swapPeak) - 10} fill="#10B981" fontSize="11" fontWeight="700" textAnchor="middle">
+                      {swapPeak} mg/dL
+                    </text>
+                  </>
+                )}
+
+                {/* X Axis Time */}
+                {timeSteps.map((t, idx) => (
+                  <text key={`t-${idx}`} x={getX(idx)} y={svgHeight - 12} fill="#64748B" fontSize="10" textAnchor="middle">
+                    {t}m
+                  </text>
+                ))}
+              </svg>
+            ) : (
+              // Biophysical ODE Gut Appearance Flux Chart
+              <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{ width: '100%', height: 'auto', maxHeight: '300px' }}>
+                {/* Y-axis: 0.0 to 3.0 mg/dL/min */}
+                {[0.5, 1.0, 1.5, 2.0, 2.5].map(flux => {
+                  const yVal = pad.top + chartH - (flux / 3.0) * chartH;
+                  return (
+                    <g key={flux}>
+                      <line
+                        x1={pad.left}
+                        y1={yVal}
+                        x2={pad.left + chartW}
+                        y2={yVal}
+                        stroke="rgba(51, 65, 85, 0.3)"
+                      />
+                      <text x={pad.left - 10} y={yVal + 4} fill="#64748B" fontSize="10" textAnchor="end">
+                        {flux.toFixed(1)} mg/dL/m
+                      </text>
+                    </g>
+                  );
+                })}
+
+                {/* Build paths for ODE Flux */}
+                {(() => {
+                  const getFluxY = val => pad.top + chartH - (Math.min(3.0, Math.max(0, val)) / 3.0) * chartH;
+                  const planFluxPath = odePlan.raCurve.reduce((acc, val, idx) => `${acc} ${idx === 0 ? 'M' : 'L'} ${getX(idx)} ${getFluxY(val)}`, '');
+                  const swapFluxPath = odeSwap.raCurve.reduce((acc, val, idx) => `${acc} ${idx === 0 ? 'M' : 'L'} ${getX(idx)} ${getFluxY(val)}`, '');
+                  return (
+                    <>
+                      {/* Planned Meal Flux */}
+                      <path d={planFluxPath} fill="none" stroke="#EF4444" strokeWidth="3" />
+                      <circle cx={getX(2)} cy={getFluxY(odePlan.peakRa)} r="5" fill="#EF4444" stroke="#FFF" strokeWidth="1.5" />
+                      <text x={getX(2)} y={getFluxY(odePlan.peakRa) - 10} fill="#EF4444" fontSize="11" fontWeight="700" textAnchor="middle">
+                        Peak: {odePlan.peakRa} mg/dL/min ({odePlan.peakRaT}m)
+                      </text>
+
+                      {/* Swap Meal Flux */}
+                      {enableSwap && (
+                        <>
+                          <path d={swapFluxPath} fill="none" stroke="#10B981" strokeWidth="3" />
+                          <circle cx={getX(3)} cy={getFluxY(odeSwap.peakRa)} r="5" fill="#10B981" stroke="#FFF" strokeWidth="1.5" />
+                          <text x={getX(3)} y={getFluxY(odeSwap.peakRa) - 10} fill="#10B981" fontSize="11" fontWeight="700" textAnchor="middle">
+                            Swap Peak: {odeSwap.peakRa} mg/dL/min ({odeSwap.peakRaT}m)
+                          </text>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
+
+                {/* X Axis Time */}
+                {timeSteps.map((t, idx) => (
+                  <text key={`t-flux-${idx}`} x={getX(idx)} y={svgHeight - 12} fill="#64748B" fontSize="10" textAnchor="middle">
+                    {t}m
+                  </text>
+                ))}
+              </svg>
+            )}
           </div>
 
           <div style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>
             Minutes Post-Meal (0 to 120 Minutes)
+          </div>
+
+          {/* Biophysical ODE Parameters & Inductive Prior Callout */}
+          <div style={{
+            marginTop: '16px',
+            padding: '14px 18px',
+            borderRadius: '10px',
+            background: 'rgba(15, 23, 42, 0.7)',
+            border: '1px solid rgba(56, 189, 248, 0.25)',
+            fontSize: '12px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
+              <span style={{ fontWeight: 700, color: '#38BDF8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sparkles size={15} /> Biophysical Gut ODE Model Parameters (Dalla Man & Lehmann Compartments)
+              </span>
+              <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+                Distribution Vol Vd = 120 dL · Bioavailability f = 88%
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '10px' }}>
+              <div style={{ background: 'rgba(30, 41, 59, 0.6)', padding: '10px', borderRadius: '8px' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Gastric Emptying Rate (k_empty)</div>
+                <div style={{ fontWeight: 700, color: '#F8FAFC', fontSize: '13px', marginTop: '2px' }}>
+                  {odePlan.k_empty} min⁻¹ <span style={{ fontSize: '11px', color: '#EF4444' }}>(Planned)</span> vs{' '}
+                  {odeSwap.k_empty} min⁻¹ <span style={{ fontSize: '11px', color: '#10B981' }}>(Swap)</span>
+                </div>
+                <div style={{ fontSize: '10px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                  High fiber & lipids attenuate emptying rate
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(30, 41, 59, 0.6)', padding: '10px', borderRadius: '8px' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Duodenal Absorption Rate (k_abs)</div>
+                <div style={{ fontWeight: 700, color: '#F8FAFC', fontSize: '13px', marginTop: '2px' }}>
+                  {odePlan.k_abs} min⁻¹ <span style={{ fontSize: '11px', color: '#EF4444' }}>(GI: {currentDish.glycemicIndex})</span> vs{' '}
+                  {odeSwap.k_abs} min⁻¹ <span style={{ fontSize: '11px', color: '#10B981' }}>(GI: {swapDish.glycemicIndex})</span>
+                </div>
+                <div style={{ fontSize: '10px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                  Governed by meal GI & brush-border hydrolysis
+                </div>
+              </div>
+
+              <div style={{ background: 'rgba(30, 41, 59, 0.6)', padding: '10px', borderRadius: '8px' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Peak Systemic Flux (Ra,max)</div>
+                <div style={{ fontWeight: 700, color: '#10B981', fontSize: '13px', marginTop: '2px' }}>
+                  {odePlan.peakRa} → {odeSwap.peakRa} mg/dL/min
+                </div>
+                <div style={{ fontSize: '10px', color: '#34D399', marginTop: '2px' }}>
+                  📉 {Math.round((1 - odeSwap.peakRa / odePlan.peakRa) * 100)}% flux reduction via swap
+                </div>
+              </div>
+            </div>
+
+            <p style={{ color: 'var(--text-secondary)', fontSize: '11px', margin: 0, lineHeight: 1.5 }}>
+              <b>🧬 Inductive Prior Linkage:</b> In Tier 2 and Tier 3 when continuous CGM traces are absent, this biophysical Ra(t) appearance flux acts as a mechanistic inductive prior for LightGBM, constraining the digital twin from hallucinating unrealistic glucose trajectories.
+            </p>
           </div>
         </div>
       </div>

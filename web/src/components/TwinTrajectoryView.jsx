@@ -9,24 +9,24 @@ export default function TwinTrajectoryView({ patient, trajectoryPoints, onOpenWh
 
   // Dynamic Conformal Uncertainty Bandwidth
   let bandMargin = 22; // mg/dL
-  let tierCost = '₹1,200/mo';
-  let tierDesc = 'Sparse glucometer fingersticks (3-4/day) + Fitbit + Indian meal log';
+  let tierCost = '₹2,296/mo (77% savings)';
+  let tierDesc = 'Sparse glucometer fingersticks (2-3/day) + Fitbit + Induction CGM recalibration';
   let alertMessage = null;
 
   if (selectedTier === 'T1_Rich') {
     bandMargin = 20;
-    tierCost = '₹10,000/mo';
+    tierCost = '₹10,000/mo (₹1,20,000/yr)';
     tierDesc = 'Continuous 5-min Dexcom G6 Pro stream + Smartwatch + Meal log';
   } else if (selectedTier === 'T2_Frugal') {
     bandMargin = virtualFingerstickLogged ? 18 : 36;
-    tierCost = '₹1,200/mo';
-    tierDesc = 'Frugal Stepped-Care: Sparse glucometer (3-4/day) with 7% ISO-15197 meter noise';
+    tierCost = '₹2,296/mo (₹27,560/yr - 77% savings)';
+    tierDesc = 'Frugal Stepped-Care: Sparse glucometer (2-3/day) + Smartwatch + Induction recalibration';
     alertMessage = virtualFingerstickLogged
       ? '✅ Virtual fingerstick recorded at 12:45 PM (128 mg/dL). Twin uncertainty band contracted by 50%.'
       : '⚡ Active Inquiry: Post-lunch uncertainty expanding (±36 mg/dL). Clinician prompt: Take fingerstick check now to anchor baseline.';
   } else {
     bandMargin = 55;
-    tierCost = '₹0/mo';
+    tierCost = '₹0/mo consumables';
     tierDesc = 'Triage Mode: Fitbit Sense wearable + Static EHR labs only (Zero glucose sensors)';
     alertMessage = '⚠️ Tier 3 Active: Operating without glucose sensors. Wide conformal ribbon reflects population variance.';
   }
@@ -108,7 +108,7 @@ export default function TwinTrajectoryView({ patient, trajectoryPoints, onOpenWh
         <div className="tier-slider-track">
           {[
             { id: 'T1_Rich', title: 'T1: Rich Continuous CGM', cost: '₹10,000 / month', desc: 'Dexcom G6 Pro (5m native stream)' },
-            { id: 'T2_Frugal', title: 'T2: Frugal Glucometer (SMBG)', cost: '₹1,200 / month', desc: '3-4 Fingersticks/day (7% ISO noise)' },
+            { id: 'T2_Frugal', title: 'T2: Frugal Stepped-Care (SMBG)', cost: '₹2,296 / month (77% save)', desc: '2-3 Fingersticks/day + Induction recalibration' },
             { id: 'T3_Triage', title: 'T3: Minimal Triage', cost: '₹0 / month', desc: 'Fitbit Wearable + Static EHR Labs' },
           ].map(t => (
             <div
