@@ -89,7 +89,7 @@ export default function RegulatorySaMDView() {
               <h2 style={{ fontSize: '22px', fontWeight: 700 }}>Regulatory SaMD Safety, ISO 14971 Hazards & Audit Ledger</h2>
             </div>
             <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              SaMD Class IIa Clinical Decision Support System · CDSCO Medical Device Rules 2017 · 21 CFR Part 11 & DPDP Act 2023 Compliant.
+              CDSCO SaMD Research Prototype (Proposed Class B Track; prospective clinical validation is future work) · ICMR Ethical Guidelines · ISO 14971 Risk Controls · DPDP Act 2023 Ledger.
             </p>
           </div>
 
@@ -108,7 +108,7 @@ export default function RegulatorySaMDView() {
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {[
           { id: 'hazards', label: '⚠️ ISO 14971 Hazard Analysis (8 Failure Modes)' },
-          { id: 'audit', label: '🔐 21 CFR Part 11 Tamper-Evident Ledger' },
+          { id: 'audit', label: '🔐 Tamper-Evident SHA-256 Audit Ledger (DPDP Act 2023)' },
           { id: 'bigideas', label: '🌐 PhysioNet BIG IDEAs External Validation' }
         ].map(tab => (
           <button
@@ -190,8 +190,8 @@ export default function RegulatorySaMDView() {
           <div className="grid-3" style={{ marginBottom: '20px' }}>
             <div className="stat-tile success">
               <div className="stat-label">Audit Engine Standard</div>
-              <div className="stat-value">21 CFR Part 11</div>
-              <div className="stat-sub">DPDP Act 2023 Tamper-Evident Ledger</div>
+              <div className="stat-value">DPDP Act 2023</div>
+              <div className="stat-sub">Tamper-Evident SHA-256 Merkle Ledger</div>
             </div>
             <div className="stat-tile indigo">
               <div className="stat-label">Cryptographic Algorithm</div>
