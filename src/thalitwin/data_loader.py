@@ -196,14 +196,17 @@ def extract_meal_windows(
     df_5min: pd.DataFrame,
     phenotype: str,
     pre_window_steps: int = 3,   # 15 minutes before meal
-    post_window_steps: int = 24  # 120 minutes after meal
+    post_window_steps: int = 24, # 120 minutes after meal
+    threshold: Optional[float] = None
 ) -> List[Dict]:
     """
     Extracts 2-hour postprandial evaluation windows for every logged meal.
     Guarantees strict leakage prevention: only includes windows where baseline glucose < threshold.
+    Default threshold: 180.0 mg/dL for T2D, 140.0 mg/dL for Normal/Prediabetes.
     """
     meals = []
-    threshold = 180.0 if phenotype == "Type 2 Diabetes" else 140.0
+    if threshold is None:
+        threshold = 180.0 if phenotype == "Type 2 Diabetes" else 140.0
     
     # Identify meal starts: rows where Carbs > 0 or Meal Type is specified
     is_meal = (df_5min["Carbs"] > 0) | (df_5min["Meal Type"].notna())

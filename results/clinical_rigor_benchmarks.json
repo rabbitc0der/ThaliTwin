@@ -1,0 +1,209 @@
+{
+  "timestamp_utc": "2026-10-24T10:55:56Z",
+  "excursion_label_definition": {
+    "prediction_horizon_minutes": 120,
+    "baseline_filter": "g_baseline < 140.0 mg/dL",
+    "excursion_threshold": "peak_glucose >= 140.0 mg/dL within 120 minutes postprandial",
+    "clinical_rationale": "Identifies true new postprandial glycemic excursions above ADA postprandial euglycemic threshold without baseline leakage."
+  },
+  "cohort_summary": {
+    "total_participants": 45,
+    "total_meal_windows": 1210,
+    "total_patient_days": 468.0,
+    "excursion_base_rate": 0.628
+  },
+  "identical_window_discrimination": {
+    "tier1_rich_cgm": {
+      "auroc": 0.765,
+      "ci_95": [
+        0.7181,
+        0.8028
+      ]
+    },
+    "tier2_frugal_smbg": {
+      "auroc": 0.748,
+      "ci_95": [
+        0.7035,
+        0.7859
+      ],
+      "retention_above_chance_pct": 93.5
+    },
+    "tier3_triage_no_sensor": {
+      "auroc": 0.693,
+      "ci_95": [
+        0.64,
+        0.7414
+      ],
+      "retention_above_chance_pct": 72.7
+    },
+    "baseline_carbs_only": {
+      "auroc": 0.628,
+      "ci_95": [
+        0.5963,
+        0.6609
+      ]
+    },
+    "baseline_hba1c_only": {
+      "auroc": 0.572,
+      "ci_95": [
+        0.4761,
+        0.6543
+      ]
+    },
+    "baseline_persistence": {
+      "auroc": 0.696,
+      "ci_95": [
+        0.652,
+        0.7347
+      ]
+    },
+    "delta_t1_minus_t2": {
+      "delta_auroc": 0.017,
+      "ci_95": [
+        0.0016,
+        0.0335
+      ]
+    }
+  },
+  "phenotype_stratification": {
+    "Type 2 Diabetes": {
+      "n_meals": 333,
+      "n_participants": 14,
+      "base_rate": 0.619,
+      "tier1_auroc": 0.76,
+      "tier1_ci": [
+        0.7016,
+        0.8307
+      ],
+      "tier2_auroc": 0.751,
+      "tier2_ci": [
+        0.7045,
+        0.809
+      ],
+      "tier3_auroc": 0.684,
+      "carbs_only_auroc": 0.618,
+      "hba1c_only_auroc": 0.515
+    },
+    "Prediabetes": {
+      "n_meals": 426,
+      "n_participants": 16,
+      "base_rate": 0.742,
+      "tier1_auroc": 0.726,
+      "tier1_ci": [
+        0.6434,
+        0.8064
+      ],
+      "tier2_auroc": 0.693,
+      "tier2_ci": [
+        0.6163,
+        0.7698
+      ],
+      "tier3_auroc": 0.658,
+      "carbs_only_auroc": 0.612,
+      "hba1c_only_auroc": 0.57
+    },
+    "Normoglycemic": {
+      "n_meals": 451,
+      "n_participants": 15,
+      "base_rate": 0.528,
+      "tier1_auroc": 0.79,
+      "tier1_ci": [
+        0.7453,
+        0.833
+      ],
+      "tier2_auroc": 0.769,
+      "tier2_ci": [
+        0.7131,
+        0.825
+      ],
+      "tier3_auroc": 0.689,
+      "carbs_only_auroc": 0.648,
+      "hba1c_only_auroc": 0.565
+    }
+  },
+  "within_person_evaluation": {
+    "evaluable_participants": 34,
+    "tier1_mean_within_auroc": 0.794,
+    "tier2_mean_within_auroc": 0.762,
+    "carbs_only_mean_within_auroc": 0.651
+  },
+  "feature_group_ablation": {
+    "Fused (Full Model)": {
+      "auroc": 0.765,
+      "ci_95": [
+        0.7181,
+        0.8028
+      ],
+      "feature_count": 35
+    },
+    "Meals-Only": {
+      "auroc": 0.677,
+      "ci_95": [
+        0.6428,
+        0.7107
+      ],
+      "feature_count": 12
+    },
+    "EHR-Static-Only": {
+      "auroc": 0.53,
+      "ci_95": [
+        0.4507,
+        0.6101
+      ],
+      "feature_count": 11
+    },
+    "Wearables-Only": {
+      "auroc": 0.524,
+      "ci_95": [
+        0.4783,
+        0.5691
+      ],
+      "feature_count": 6
+    },
+    "Glucose-Dynamics-Only": {
+      "auroc": 0.695,
+      "ci_95": [
+        0.6501,
+        0.7319
+      ],
+      "feature_count": 5
+    }
+  },
+  "clinical_alert_metrics": {
+    "target_0.5_fp_day": {
+      "target_false_alerts_per_day": 0.5,
+      "operating_threshold": 0.49,
+      "actual_false_alerts_per_day": 0.49,
+      "sensitivity": 0.862,
+      "clinical_lead_time_minutes": 46.0
+    },
+    "target_1.0_fp_day": {
+      "target_false_alerts_per_day": 1.0,
+      "operating_threshold": 0.2,
+      "actual_false_alerts_per_day": 0.8,
+      "sensitivity": 0.984,
+      "clinical_lead_time_minutes": 46.0
+    },
+    "target_1.2_fp_day": {
+      "target_false_alerts_per_day": 1.2,
+      "operating_threshold": 0.2,
+      "actual_false_alerts_per_day": 0.8,
+      "sensitivity": 0.984,
+      "clinical_lead_time_minutes": 46.0
+    },
+    "target_2.0_fp_day": {
+      "target_false_alerts_per_day": 2.0,
+      "operating_threshold": 0.2,
+      "actual_false_alerts_per_day": 0.8,
+      "sensitivity": 0.984,
+      "clinical_lead_time_minutes": 46.0
+    }
+  },
+  "conformal_uncertainty": {
+    "target_coverage": 0.9,
+    "empirical_coverage": 0.9,
+    "q90_half_width_mg_dl": 55.48,
+    "mean_full_interval_width_mg_dl": 110.95,
+    "conformal_exchangeability_note": "Split conformal marginal coverage on temporal series holds asymptotically across patient clusters, though localized rapid swings may exhibit conditional heteroscedasticity."
+  }
+}
