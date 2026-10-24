@@ -680,9 +680,9 @@ elif selected_view == "4. Stepped-Care Health Economics":
     with col_e1:
         st.markdown("### 📊 Performance-per-Rupee Frontier")
         econ_df = pd.DataFrame([
-            {"Tier": "T1: Rich CGM", "Monthly Cost (INR)": 10000, "AUROC": 0.755, "Sensitivity": 0.824, "Accuracy Retained": "100.0%", "Monthly Savings": "₹0"},
-            {"Tier": "T2: Frugal SMBG", "Monthly Cost (INR)": 1200, "AUROC": 0.743, "Sensitivity": 0.826, "Accuracy Retained": "98.4%", "Monthly Savings": "₹8,800 (88%)"},
-            {"Tier": "T3: Triage Fitbit", "Monthly Cost (INR)": 100, "AUROC": 0.688, "Sensitivity": 0.825, "Accuracy Retained": "91.1%", "Monthly Savings": "₹9,900 (99%)"}
+            {"Tier": "T1: Rich CGM", "Monthly Cost (INR)": 10000, "AUROC": 0.765, "Sensitivity": 0.862, "Accuracy Retained": "100.0%", "Monthly Savings": "₹0"},
+            {"Tier": "T2: Frugal Stepped Care", "Monthly Cost (INR)": 2296, "AUROC": 0.748, "Sensitivity": 0.862, "Accuracy Retained": "93.5% (Above Chance)", "Monthly Savings": "₹7,704 (77%)"},
+            {"Tier": "T3: Triage Wearable", "Monthly Cost (INR)": 0, "AUROC": 0.693, "Sensitivity": 0.825, "Accuracy Retained": "72.7% (Above Chance)", "Monthly Savings": "₹10,000 (100%)"}
         ])
         st.table(econ_df)
         
@@ -690,9 +690,9 @@ elif selected_view == "4. Stepped-Care Health Economics":
             <div class="metric-card">
                 <div class="metric-label">Key Health Economics Finding</div>
                 <div style="font-size: 15px; color: #CBD5E1; margin-top: 6px; line-height: 1.6;">
-                    • <b>The ₹10,000 CGM Barrier:</b> Less than 5% of Indian diabetics can afford continuous sensors out-of-pocket.<br>
-                    • <b>The Stepped-Care Breakthrough:</b> By calibrating on a CGM for 7 days during initial clinic onboarding and stepping down to ₹1,200/mo fingersticks, <b>98.4% of excursion AUROC is preserved</b>.<br>
-                    • <b>Annual Household Savings:</b> ₹1,05,600 per patient per year.
+                    • <b>The ₹1,20,000/yr CGM Barrier:</b> Less than 5% of Indian diabetics can afford continuous sensors out-of-pocket.<br>
+                    • <b>The Stepped-Care Breakthrough:</b> By calibrating on a CGM for 7 days during initial clinic onboarding and stepping down to ₹2,296/mo frugal SMBG, <b>93.5% of above-chance excursion discrimination is preserved</b>.<br>
+                    • <b>Annual Household Savings:</b> ₹92,440 per patient per year (77% net cost reduction).
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -805,7 +805,7 @@ elif selected_view == "5. Scientific Evidence & Trust Pack":
 # ==============================================================================
 elif selected_view == "6. Regulatory SaMD Safety & Audit Ledger":
     st.subheader("🛡️ Regulatory SaMD Safety, ISO 14971 Hazards & Audit Ledger")
-    st.markdown("CDSCO SaMD Class IIa compliance, 21 CFR Part 11 cryptographic audit trail, and external cohort validation.")
+    st.markdown("CDSCO SaMD Class B (Proposed) alignment, DPDP Act 2023 cryptographic audit trail, and external cohort validation.")
 
     reg_tab1, reg_tab2, reg_tab3, reg_tab4 = st.tabs([
         "⚠️ ISO 14971 Hazard Matrix",

@@ -1,7 +1,7 @@
 # ==============================================================================
 # ThaliTwin Enterprise Container Image
 # Happiest Health Digital Twin Challenge 2026
-# SaMD Class IIa Clinical Decision Support System
+# CDSCO SaMD Proposed Class B Research Prototype
 # ==============================================================================
 
 FROM python:3.11-slim

@@ -68,7 +68,7 @@ def generate_presentation_pdf():
                 "Validated end-to-end on 45 real study participants from PhysioNet CGMacros",
                 "Incorporating authentic Indian nutrition from ICMR-NIN IFCT 2017"
             ],
-            "highlight_box": ("The Mission", "Delivering 98.4% of continuous CGM twin accuracy at 12% of the monthly cost.")
+            "highlight_box": ("The Mission", "Delivering 93.5% of above-chance CGM twin discrimination at a 77% cost reduction.")
         },
         # Slide 2
         {
@@ -179,13 +179,13 @@ def generate_presentation_pdf():
             "title": "Stepped-Care Results & Performance-per-Rupee",
             "subtitle": "Authoritative Cross-Tier Evaluation on 45 Real Patients",
             "bullets": [
-                "Tier 1 (Rich CGM - ₹10,000/mo): AUROC = 0.755 | Sensitivity = 0.824 | Peak RMSE = 34.03 mg/dL.",
-                "Tier 2 (Frugal SMBG - ₹1,200/mo): AUROC = 0.743 | Sensitivity = 0.826 | Peak RMSE = 34.67 mg/dL.",
-                "Tier 3 (Triage Fitbit - ₹0/mo): AUROC = 0.688 | Sensitivity = 0.825 | Peak RMSE = 34.74 mg/dL.",
-                "Stepping down from CGM to Glucometer retains 98.4% of AUROC while cutting patient cost by 88%.",
-                "Direct Annual Household Savings: ₹1,05,600 per patient per year."
+                "Tier 1 (Rich CGM - ₹10,000/mo): AUROC = 0.765 [0.718, 0.803] | Sensitivity = 86.2% | Peak RMSE = 34.03 mg/dL.",
+                "Tier 2 (Frugal SMBG - ₹2,296/mo all-in): AUROC = 0.748 [0.704, 0.786] | Sensitivity = 86.2% | Peak RMSE = 34.67 mg/dL.",
+                "Tier 3 (Triage Wearable - ₹0/mo): AUROC = 0.693 [0.640, 0.741] | Sensitivity = 82.5% | Peak RMSE = 34.74 mg/dL.",
+                "Stepping down from CGM to Glucometer retains 93.5% of above-chance AUROC while cutting patient cost by 77%.",
+                "Direct Annual Household Savings: ₹92,440 per patient per year."
             ],
-            "highlight_box": ("Stepped-Care Frontier", "98.4% of digital twin accuracy preserved at 12% of the monthly cost.")
+            "highlight_box": ("Stepped-Care Frontier", "93.5% of above-chance accuracy preserved with ₹92,440 annual savings.")
         },
         # Slide 11
         {

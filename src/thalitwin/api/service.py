@@ -321,7 +321,7 @@ async def api_landing_portal():
         <div class="container">
             <div class="badge-row">
                 <span class="badge badge-green">● Service Online (200 OK)</span>
-                <span class="badge">SaMD Class IIa</span>
+                <span class="badge">CDSCO SaMD Class B (Proposed)</span>
                 <span class="badge">ABDM HL7 FHIR R4</span>
                 <span class="badge">45 Cohort Patients</span>
             </div>

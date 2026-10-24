@@ -38,14 +38,13 @@ ThaliTwin integrates three symbiotic modeling tiers:
 
 | Metric | Tier 1 (Rich CGM) | Tier 2 (Frugal SMBG) | Tier 3 (Triage Fitbit) | Persistence Baseline | Sensor Noise Floor |
 |:---|:---:|:---:|:---:|:---:|:---:|
-| **Monthly Patient Cost (INR)** | ₹10,000 | ₹1,200 | ₹0 | - | - |
-| **Excursion AUROC** | **0.755** | **0.743** | **0.688** | 0.500 | - |
-| **Excursion AUPRC** | **0.804** | **0.800** | **0.752** | 0.520 | - |
-| **Excursion Sensitivity** | **0.824** | **0.826** | **0.825** | - | - |
+| **Monthly Patient Cost (INR)** | ₹10,000 | ₹2,296 (all-in) | ₹0 | - | - |
+| **Excursion AUROC [95% CI]** | **0.765** [0.718, 0.803] | **0.748** [0.704, 0.786] | **0.693** [0.640, 0.741] | 0.500 | - |
+| **Excursion Sensitivity (at $\le 0.5$ FP/d)** | **86.2%** | **86.2%** | **82.5%** | - | - |
 | **Peak Rise RMSE (mg/dL)** | **34.03** | **34.67** | **34.74** | 67.59 | **38.71** |
 | **Conformal 90% Band** | $\pm 55.48$ mg/dL | $\pm 56.48$ mg/dL | $\pm 55.98$ mg/dL | - | - |
-| **Relative AUROC Retained** | 100.0% | **98.4%** | 91.1% | - | - |
-| **Monthly Cost Savings** | 0% | **88.0%** | 99.0% | - | - |
+| **Relative Retained (Above Chance)** | 100.0% | **93.5%** | **72.7%** | - | - |
+| **Annual Cost Savings** | Baseline | **77.0% (₹92,440/yr)** | **100.0% (₹1,20,000/yr)** | - | - |
 
 ---
 

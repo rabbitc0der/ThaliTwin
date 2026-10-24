@@ -34,9 +34,9 @@
 > *(Pointing to Streamlit Console Module 2 or Health Economics Module 4)*  
 > *"Instead of forcing a patient to wear a ₹10,000 sensor forever, ThaliTwin prescribes **7 Days of Induction on CGM** during clinical onboarding. During these 7 days, our Empirical-Bayes shrinkage engine ($\kappa=4.0$) calibrates the patient's individual carbohydrate sensitivity and diurnal baseline.*  
 >  
-> *On Day 8, the patient steps down to **Tier 2: Frugal Glucometer Self-Monitoring (SMBG)** at just ₹1,200/month. The digital twin reconstructs continuous glycemic forecasts using our culturally grounded Indian Thali registry and smartwatch activity.*  
+> *On Day 8, the patient steps down to **Tier 2: Frugal Stepped Care (SMBG)** at just ₹2,296/month (all-in with induction sensors). The digital twin reconstructs continuous glycemic forecasts using our culturally grounded Indian Thali registry and smartwatch activity.*  
 >  
-> *The result? **98.4% of excursion classification AUROC is preserved** (0.743 vs 0.755 on continuous CGM), saving each Indian household **₹1,05,600 every single year**."*
+> *The result? **93.5% of above-chance discrimination is preserved** (0.748 vs 0.765 on continuous CGM), saving each Indian household **₹92,440 every single year (77% net cost reduction)**."*
 
 ---
 
@@ -45,9 +45,9 @@
 > *(Open Module 3: Indian Thali What-If Simulator)*  
 > *"Let's test this live on Patient #1, a real 64-year-old Type 2 Diabetic from our 45-patient clinical cohort.*  
 >  
-> *Suppose the patient plans to eat 3 Refined Maida Pooris with Aloo Bhaji for lunch. The twin immediately forecasts a steep 58 mg/dL spike peaking above 190 mg/dL.*  
+> *Suppose the patient plans to eat 3 Refined Maida Pooris with Aloo Bhaji for lunch. The twin immediately forecasts a steep spike peaking above 190 mg/dL.*  
 >  
-> *With one click on our counterfactual engine, ThaliTwin evaluates a culturally acceptable swap: 'Swap to 2 Bajra Rotis + Sprouted Moong Dal + 15-Minute Post-Meal Walk'. The forecast curve flattens instantly, attenuating the excursion by 24 mg/dL while providing 90% split-conformal uncertainty ribbons.*  
+> *With one click on our counterfactual engine, ThaliTwin evaluates a culturally acceptable swap: 'Swap to 2 Bajra Rotis + Sprouted Moong Dal + 15-Minute Post-Meal Walk'. We can toggle between **Plasma Glucose $G(t)$** and the **Biophysical ODE Gut Appearance Flux $R_a(t)$**, showing how dietary fiber flattens systemic appearance flux by over 50%!*  
 >  
 > *What if the patient skips logging a roadside sweet cutting chai? Our **Active Inquiry anomaly detector** notices the unexplained glucose velocity, recovers safety in 74.4% of unlogged dropouts, and prompts the patient without alert fatigue."*
 
@@ -56,12 +56,12 @@
 ### Minute 4: Scientific Rigor & ISO 14971 Safety (03:30 – 04:15)
 > **Presenter:**  
 > *(Open Module 6: Regulatory SaMD Safety & Audit Ledger)*  
-> *"ThaliTwin is not an unconstrained deep learning demo. We have engineered it under **CDSCO SaMD Class IIa** and **ISO 14971:2019** medical device standards:*  
+> *"ThaliTwin is not an unconstrained deep learning demo. We have engineered it under **CDSCO SaMD Proposed Class B Research Prototype** and **ISO 14971:2019** medical device standards:*  
 >  
-> *1. **Empirical Sensor Noise Floor:** We derived from 629,605 paired sensor readings that dual medical-grade CGMs disagree by **38.71 mg/dL RMSE**. Any model claiming RMSE <30 mg/dL without regularizers is overfitting to sensor artifacts.*  
-> *2. **Deep Sequence Baseline:** Our LightGBM + Bayes model beats a 2-layer PyTorch BiGRU with Attention by +3.22 to +4.09 mg/dL RMSE across all prediction horizons.*  
-> *3. **External Out-of-Distribution Validation:** We validated ThaliTwin zero-shot on 16 subjects from the PhysioNet BIG IDEAs external cohort: achieving **0.754 AUROC (99.9% retention)**.*  
-> *4. **Cryptographic Governance:** Every single inference and tier transition is anchored in an append-only SHA-256 Merkle-chained ledger compliant with **21 CFR Part 11 and the DPDP Act 2023**."*
+> *1. **Empirical Sensor Noise Floor:** We derived from 629,605 paired sensor readings that dual medical-grade CGMs disagree by **38.71 mg/dL RMSE (25.5% MARD)**. Any model claiming RMSE <30 mg/dL without regularizers is overfitting to sensor artifacts.*  
+> *2. **Identical-Window Baselines:** Evaluated under 5-fold Stratified GroupKFold with patient-clustered bootstrap 95% CIs, Tier 1 (0.765) and Tier 2 (0.748) statistically beat Persistence (0.696), Carbs-Only (0.628), and HbA1c-Only (0.572).*  
+> *3. **Within-Person Discrimination:** Within-person AUROC across 34 evaluable patients is **0.794**, proving our twin is capturing true meal dynamics rather than merely identifying who has severe diabetes.*  
+> *4. **Cryptographic Governance:** Every single inference and tier transition is anchored in an append-only SHA-256 Merkle-chained ledger compliant with the **DPDP Act 2023**."*
 
 ---
 
@@ -76,11 +76,11 @@
 
 ## 2. Master Defense: Clinician & Jury Tough Q&A
 
-### Q1: *"How can you claim 98.4% AUROC retention when stepping down from continuous CGM to just 2-3 fingersticks a day?"*
+### Q1: *"How can you claim 93.5% above-chance AUROC retention when stepping down from continuous CGM to just 2-3 fingersticks a day?"*
 * **Scientific Defense:**  
   * *"In the PhysioNet CGMacros study of 45 real adults over 468 monitored days, between-subject variance ($\sigma_b^2 \approx 100$) is substantially smaller than within-subject daily meal variation ($\sigma_w^2 \approx 400$).*  
-  * *During the 7-day CGM induction, the Empirical-Bayes shrinkage weight $w = n/(n+4)$ reaches $w = 0.84$, effectively locking in the patient's individual baseline and postprandial response shape.*  
-  * *Fingersticks are not taken at random times; they are scheduled at pre-meal and 90-minute postprandial anchor points where information entropy is highest. Combined with continuous smartwatch step telemetry, the digital twin interpolates the metabolic state with high mathematical fidelity (Tier 1 AUROC = 0.755 vs Tier 2 AUROC = 0.743)."*
+  * *During the 7-day CGM induction, the Empirical-Bayes shrinkage engine locks in the patient's individual baseline and postprandial response shape.*  
+  * *Fingersticks are scheduled at pre-meal and 90-minute postprandial anchor points where information entropy is highest. Combined with continuous smartwatch step telemetry, the digital twin retains 93.5% of above-chance discrimination (Tier 1 AUROC = 0.765 vs Tier 2 AUROC = 0.748 [95% CI: 0.704, 0.786])."*
 
 ---
 

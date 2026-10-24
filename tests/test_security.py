@@ -1,6 +1,6 @@
 """
 test_security.py
-Automated security & pre-deploy checks for ThaliTwin SaMD Class IIa API.
+Automated security & pre-deploy checks for ThaliTwin CDSCO SaMD Proposed Class B API.
 Validates OWASP security headers, sliding-window rate limiting, ID bounds, and secret guards.
 """
 

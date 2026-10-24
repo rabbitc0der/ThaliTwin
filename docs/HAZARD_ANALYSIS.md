@@ -1,22 +1,22 @@
 # ISO 14971:2019 Medical Device Hazard Analysis & Clinical Safety Matrix
-## ThaliTwin Clinical Decision Support System (SaMD Class IIa)
+## ThaliTwin Clinical Decision Support System (CDSCO SaMD Proposed Class B Track)
 
 **Document Reference:** TT-RM-14971-V1.0  
 **Regulatory Standard:** ISO 14971:2019 (Medical devices — Application of risk management to medical devices)  
-**Software Lifecycle Standard:** IEC 62304:2006+AMD1:2015 (Medical device software — Software life cycle processes, Class B/IIa)  
+**Software Lifecycle Standard:** IEC 62304:2006+AMD1:2015 (Medical device software — Software life cycle processes, Class B Architecture)  
 **Target Jurisdiction:** CDSCO (India Medical Device Rules 2017) / ICMR Ethical Guidelines for AI in Healthcare / DPDP Act 2023  
-**Classification:** SaMD Class IIa (Low-to-Moderate Risk Clinical Decision Support; Physician-in-the-Loop)
+**Classification:** CDSCO SaMD Research Prototype (Proposed Class B Track; prospective clinical validation is future work; Physician-in-the-Loop)
 
 ---
 
 ## 1. Executive Summary & Clinical Intent
 
-ThaliTwin is an algorithmic Software as a Medical Device (SaMD) that emulates postprandial glucose dynamics and provides stepped-care transition guidance for Type 2 Diabetes (T2D) patients in India. 
+ThaliTwin is an algorithmic Software as a Medical Device (SaMD) research prototype that emulates postprandial glucose dynamics and provides stepped-care transition guidance for Type 2 Diabetes (T2D) patients in India. 
 
 Under the **Calibrate-Then-Step-Down** protocol:
 - Patients undergo a 7-day high-resolution continuous glucose monitoring (CGM) induction (Tier 1: ₹10,000/mo).
-- Patients step down to frugal glucometer self-monitoring of blood glucose (SMBG; Tier 2: ₹1,200/mo) + smartwatch telemetry + Indian meal logging.
-- The digital twin uses Empirical-Bayes shrinkage and active inquiry anomaly detection to maintain clinical safety while saving households ₹1,05,600/year.
+- Patients step down to frugal glucometer self-monitoring of blood glucose (SMBG; Tier 2: ₹2,296/mo all-in) + smartwatch telemetry + Indian meal logging.
+- The digital twin uses Empirical-Bayes shrinkage and active inquiry anomaly detection to maintain clinical safety while saving households ₹92,440/year (77% net cost reduction).
 
 Because ThaliTwin generates predictions that inform clinician and patient dietary and lifestyle adjustments, systematic identification of hazards, rigorous estimation of risk, and software-enforced fail-safes are mandatory.
 
@@ -78,7 +78,7 @@ Because ThaliTwin generates predictions that inform clinician and patient dietar
 Following implementation of the 8 software safety mitigations:
 - **Zero hazards remain in the Unacceptable (Red) region.**
 - **All residual hazards are reduced to Acceptable (Green) or ALARP (Yellow).**
-- The clinical benefit of the Calibrate-Then-Step-Down digital twin (₹1,05,600/year cost reduction with 98.4% AUROC retention) significantly outweighs the negligible residual software risks.
+- The clinical benefit of the Calibrate-Then-Step-Down digital twin (₹92,440/year net cost reduction with 93.5% above-chance AUROC retention) significantly outweighs the negligible residual software risks.
 
 **Approved by Clinical Risk Engineering Team:**  
 *ThaliTwin Engineering & Clinical Architecture Core*  
